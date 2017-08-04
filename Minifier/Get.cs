@@ -12,26 +12,27 @@ namespace Minifier
     public static class Get
     {
         [FunctionName("Get")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{slug}")]HttpRequestMessage req, string slug, TraceWriter log)
+        public static HttpResponseMessage Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{slug}")] HttpRequestMessage req, string slug, TraceWriter log)
         {
             // Fetch configuration values
-            var adClientId = ConfigurationManager.AppSettings["ClientId"];
-            var adKey = ConfigurationManager.AppSettings["ClientKey"];
-            var keyUrl = ConfigurationManager.AppSettings["ConnectionstringUrl"];
+            var clientId = ConfigurationManager.AppSettings["ClientId"];
+            var clientSecret = ConfigurationManager.AppSettings["ClientKey"];
+            var connectionstringUrl = ConfigurationManager.AppSettings["ConnectionstringUrl"];
 
             // Create a Key Vault client with an Active Directory authentication callback
-            var keyVault = new KeyVaultClient(async (string authority, string resource, string scope) => {
+            var keyVault = new KeyVaultClient(async (authority, resource, scope) =>
+            {
                 var authContext = new AuthenticationContext(authority);
-                var credential = new ClientCredential(adClientId, adKey);
+                var credential = new ClientCredential(clientId, clientSecret);
                 var token = await authContext.AcquireTokenAsync(resource, credential);
                 return token.AccessToken;
             });
 
-
             // Get the API key out of the vault
-            var connectionstring = keyVault.GetSecretAsync(keyUrl).Result.Value;
+            var connectionstring = keyVault.GetSecretAsync(connectionstringUrl).Result.Value;
 
-            return req.CreateResponse(HttpStatusCode.OK, "Hello " + connectionstring);
+            return req.CreateResponse(HttpStatusCode.OK, "The connection string is: " + connectionstring);
         }
     }
 }
