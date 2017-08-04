@@ -1,8 +1,11 @@
+using System.Configuration;
 using System.Net;
 using System.Net.Http;
+using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace Minifier
 {
@@ -11,9 +14,24 @@ namespace Minifier
         [FunctionName("Get")]
         public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{slug}")]HttpRequestMessage req, string slug, TraceWriter log)
         {
-            log.Info("C# HTTP trigger function processed a request.");
+            // Fetch configuration values
+            var adClientId = ConfigurationManager.AppSettings["ClientId"];
+            var adKey = ConfigurationManager.AppSettings["ClientKey"];
+            var keyUrl = ConfigurationManager.AppSettings["ConnectionstringUrl"];
 
-            return req.CreateResponse(HttpStatusCode.OK, "Hello " + slug);
+            // Create a Key Vault client with an Active Directory authentication callback
+            var keyVault = new KeyVaultClient(async (string authority, string resource, string scope) => {
+                var authContext = new AuthenticationContext(authority);
+                var credential = new ClientCredential(adClientId, adKey);
+                var token = await authContext.AcquireTokenAsync(resource, credential);
+                return token.AccessToken;
+            });
+
+
+            // Get the API key out of the vault
+            var connectionstring = keyVault.GetSecretAsync(keyUrl).Result.Value;
+
+            return req.CreateResponse(HttpStatusCode.OK, "Hello " + connectionstring);
         }
     }
 }
