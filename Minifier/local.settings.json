@@ -5,6 +5,7 @@
     "AzureWebJobsDashboard": "",
     "ClientId": "[myClientId]",
     "ClientKey": "[myClientKey]",
-    "ConnectionstringUrl": "[theUrlFromKeyVaultContainingTheSecret"
+    "ConnectionstringUrl": "[theUrlFromKeyVaultContainingTheSecret",
+    "MyTest": "TestValue"
   }
 }
