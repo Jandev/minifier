@@ -32,7 +32,7 @@ namespace Minifier
             // Get the API key out of the vault
             var connectionstring = keyVault.GetSecretAsync(connectionstringUrl).Result.Value;*/
             log.Info($"Entering the function! Slug is {slug}");
-            var testValue = ConfigurationManager.AppSettings["MyTest"];
+            var testValue = ConfigurationManager.AppSettings["ConnectionstringUrl"];
             return req.CreateResponse(HttpStatusCode.OK, $"The value is {testValue}");
         }
     }
