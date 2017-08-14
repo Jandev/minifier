@@ -16,7 +16,7 @@ namespace Minifier
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{slug}")] HttpRequestMessage req, string slug, TraceWriter log)
         {
             // Fetch configuration values
-            var clientId = ConfigurationManager.AppSettings["ClientId"];
+            /*var clientId = ConfigurationManager.AppSettings["ClientId"];
             var clientSecret = ConfigurationManager.AppSettings["ClientKey"];
             var connectionstringUrl = ConfigurationManager.AppSettings["ConnectionstringUrl"];
 
@@ -30,9 +30,10 @@ namespace Minifier
             });
 
             // Get the API key out of the vault
-            var connectionstring = keyVault.GetSecretAsync(connectionstringUrl).Result.Value;
+            var connectionstring = keyVault.GetSecretAsync(connectionstringUrl).Result.Value;*/
 
             var testValue = ConfigurationManager.AppSettings["MyTest"];
+            log.Info($"Testvalue = {testValue}");
             return req.CreateResponse(HttpStatusCode.OK, "Configuration value: " + testValue);
         }
     }
