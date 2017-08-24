@@ -13,6 +13,9 @@
     },
     "subscriptionId": {
       "value": "[mySubscriptionId]"
+    },
+    "myValue": {
+      "value": "[mySubscriptionId]"
     }
   }
 }

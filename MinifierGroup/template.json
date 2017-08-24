@@ -48,7 +48,7 @@
                     },
                     {
                       "name": "MyValue",
-                      "value": "JustDeployed"
+                      "value": "parameters('myValue')"
                     }
                   ]
                 },
