@@ -25,13 +25,13 @@
 #>
 
 param(
- [Parameter(Mandatory=$True)]
+ 
  [string]
- $subscriptionId,
+ $subscriptionId = "ba49bae7-2b37-4504-914b-441763a2bcd3",
 
- [Parameter(Mandatory=$True)]
+ 
  [string]
- $resourceGroupName,
+ $resourceGroupName = "minify",
 
  [string]
  $resourceGroupLocation,

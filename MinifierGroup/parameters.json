@@ -1,18 +1,18 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "name": {
-            "value": "minify"
-        },
-        "storageName": {
-            "value": "minifystore"
-        },
-        "location": {
-            "value": "West Europe"
-        },
-        "subscriptionId": {
-            "value": ""
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "value": "minify2"
+    },
+    "storageName": {
+      "value": "minifystore2"
+    },
+    "location": {
+      "value": "West Europe"
+    },
+    "subscriptionId": {
+      "value": "ba49bae7-2b37-4504-914b-441763a2bcd3"
     }
+  }
 }
