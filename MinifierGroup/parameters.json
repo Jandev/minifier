@@ -3,16 +3,16 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "name": {
-      "value": "minify2"
+      "value": "minify"
     },
     "storageName": {
-      "value": "minifystore2"
+      "value": "minifystore"
     },
     "location": {
       "value": "West Europe"
     },
     "subscriptionId": {
-      "value": "ba49bae7-2b37-4504-914b-441763a2bcd3"
+      "value": "[mySubscriptionId]"
     }
   }
 }
