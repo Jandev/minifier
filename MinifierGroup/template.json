@@ -51,7 +51,7 @@
             },
             {
               "name": "MyValue",
-              "value": "parameters('myValue')"
+              "value": "[parameters('myValue')]"
             }
           ]
         },
