@@ -1,6 +1,7 @@
 using System.Configuration;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -12,11 +13,20 @@ namespace Minifier
     public static class Get
     {
         [FunctionName("Get")]
-        public static HttpResponseMessage Run(
+        public static async Task<HttpResponseMessage> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{slug}")] HttpRequestMessage req, string slug, TraceWriter log)
         {
+            var connectionstring = await GetConnectionString();
+
+            log.Info($"Entering the function! Slug is {slug}");
+            var testValue = ConfigurationManager.AppSettings["MyTest"];
+            return req.CreateResponse(HttpStatusCode.OK, $"The value is {testValue}");
+        }
+
+        private static async Task<string> GetConnectionString()
+        {
             // Fetch configuration values
-            /*var clientId = ConfigurationManager.AppSettings["ClientId"];
+            var clientId = ConfigurationManager.AppSettings["ClientId"];
             var clientSecret = ConfigurationManager.AppSettings["ClientKey"];
             var connectionstringUrl = ConfigurationManager.AppSettings["ConnectionstringUrl"];
 
@@ -30,10 +40,8 @@ namespace Minifier
             });
 
             // Get the API key out of the vault
-            var connectionstring = keyVault.GetSecretAsync(connectionstringUrl).Result.Value;*/
-            log.Info($"Entering the function! Slug is {slug}");
-            var testValue = ConfigurationManager.AppSettings["MyTest"];
-            return req.CreateResponse(HttpStatusCode.OK, $"The value is {testValue}");
+            var secret = await keyVault.GetSecretAsync(connectionstringUrl);
+            return secret.Value;
         }
     }
 }

@@ -14,8 +14,14 @@
     "subscriptionId": {
       "value": "[mySubscriptionId]"
     },
-    "myValue": {
-      "value": "[myValue]"
+    "connectionstringUrl": {
+      "value": "[connectionString]"
+    },
+    "clientId": {
+      "value": "[clientId]"
+    },
+    "clientKey": {
+      "value": "[clientKey]"
     }
   }
 }

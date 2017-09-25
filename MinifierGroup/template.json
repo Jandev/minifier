@@ -12,7 +12,13 @@
     "subscriptionId": {
       "type": "string"
     },
-    "myValue": {
+    "connectionstringUrl": {
+      "type": "string"
+    },
+    "clientId": {
+      "type": "string"
+    },
+    "clientKey": {
       "type": "string"
     }
   },
@@ -50,8 +56,16 @@
               "value": "6.5.0"
             },
             {
-              "name": "MyValue",
-              "value": "[parameters('myValue')]"
+              "name": "ClientId",
+              "value": "[parameters('clientId')]"
+            },
+            {
+              "name": "ClientKey",
+              "value": "[parameters('clientKey')]"
+            },
+            {
+              "name": "ConnectionstringUrl",
+              "value": "[parameters('connectionstringUrl')]"
             }
           ]
         },
