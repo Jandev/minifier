@@ -3,9 +3,9 @@
   "Values": {
     "AzureWebJobsStorage": "",
     "AzureWebJobsDashboard": "",
-    "ClientId": "[myClientId]",
-    "ClientKey": "[myClientKey]",
-    "ConnectionstringUrl": "[theUrlFromKeyVaultContainingTheSecret",
-    "MyTest": "TestValue"
+    "ClientId": "",
+    "ClientKey": "",
+    "CosmosEndpoint": "",
+    "CosmosAuthenticationKey": ""
   }
 }
