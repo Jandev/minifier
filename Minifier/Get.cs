@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -24,7 +25,9 @@ namespace Minifier
             {
                 return req.CreateErrorResponse(HttpStatusCode.NotFound, $"Minified value `{slug}` is not found.");
             }
-            return req.CreateResponse(HttpStatusCode.OK, $"The value is {minifiedUrl.FullUrl}");
+            var response = req.CreateResponse(HttpStatusCode.Redirect);
+            response.Headers.Location = new Uri(minifiedUrl.FullUrl);
+            return response;
         }
     }
 }
