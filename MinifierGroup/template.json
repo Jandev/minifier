@@ -12,13 +12,16 @@
     "subscriptionId": {
       "type": "string"
     },
-    "connectionstringUrl": {
-      "type": "string"
-    },
     "clientId": {
       "type": "string"
     },
     "clientKey": {
+      "type": "string"
+    },
+    "cosmosEndpoint": {
+      "type": "string"
+    },
+    "cosmosAuthenticationKey": {
       "type": "string"
     }
   },
@@ -64,8 +67,12 @@
               "value": "[parameters('clientKey')]"
             },
             {
-              "name": "ConnectionstringUrl",
-              "value": "[parameters('connectionstringUrl')]"
+              "name": "CosmosEndpoint",
+              "value": "[parameters('cosmosEndpoint')]"
+            },
+            {
+              "name": "CosmosAuthenticationKey",
+              "value": "[parameters('cosmosAuthenticationKey')]"
             }
           ]
         },

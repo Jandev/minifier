@@ -22,6 +22,12 @@
     },
     "clientKey": {
       "value": "[clientKey]"
+    },
+    "CosmosEndpoint": {
+      "value": "[cosmosEndpoint]"
+    },
+    "CosmosAuthenticationKey": {
+      "value": "[cosmosAuthenticationKey]"
     }
   }
 }
