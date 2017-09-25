@@ -2,7 +2,7 @@
 
 namespace Minifier.Model
 {
-    internal class MinifiedUrl
+    public class MinifiedUrl
     {
         public string MinifiedSlug { get; set; }
         public string FullUrl { get; set; }
