@@ -1,0 +1,12 @@
+﻿{
+  "$schema": "http://json.schemastore.org/proxies",
+  "proxies": {
+    "getminifiedredirect": {
+      "matchCondition": {
+        "methods": [ "GET" ],
+        "route": "/{slug}"
+      },
+      "backendUri": "api/{slug}"
+    }
+  }
+}
