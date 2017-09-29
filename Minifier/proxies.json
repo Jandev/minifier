@@ -6,7 +6,7 @@
         "methods": [ "GET" ],
         "route": "/{slug}"
       },
-      "backendUri": "api/{slug}"
+      "backendUri": "/api/{slug}"
     }
   }
 }
