@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minifier", "Minifier\Minifier.csproj", "{CAFDCAC0-4848-4764-9446-1C59DBFA4BD0}"
 EndProject
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "MinifierGroup", "MinifierGroup\MinifierGroup.deployproj", "{F11465A6-6F78-4C55-A748-9225FAA331F1}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{CAFDCAC0-4848-4764-9446-1C59DBFA4BD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAFDCAC0-4848-4764-9446-1C59DBFA4BD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAFDCAC0-4848-4764-9446-1C59DBFA4BD0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F11465A6-6F78-4C55-A748-9225FAA331F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F11465A6-6F78-4C55-A748-9225FAA331F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F11465A6-6F78-4C55-A748-9225FAA331F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F11465A6-6F78-4C55-A748-9225FAA331F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
