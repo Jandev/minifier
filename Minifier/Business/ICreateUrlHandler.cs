@@ -1,10 +1,9 @@
-﻿using System.Threading.Tasks;
-using Minifier.Model;
+﻿using Minifier.Model;
 
 namespace Minifier.Business
 {
     internal interface ICreateUrlHandler
     {
-        Task Execute(MinifiedUrl minifiedUrl);
+        MinifiedUrl Execute(MinifiedUrl minifiedUrl);
     }
 }

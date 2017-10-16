@@ -1,7 +1,5 @@
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -14,13 +12,15 @@ namespace Minifier
     public static class Create
     {
         [FunctionName("Create")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "create")]HttpRequestMessage req, TraceWriter log)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "create")]HttpRequestMessage req, 
+            [DocumentDB("TablesDB", "minified-urls", ConnectionStringSetting = "Minified_ConnectionString", CreateIfNotExists = true)] out MinifiedUrl minifiedUrl,
+            TraceWriter log)
         {
-            string jsonContent = await req.Content.ReadAsStringAsync();
+            string jsonContent = req.Content.ReadAsStringAsync().Result;
             var data = JsonConvert.DeserializeObject<MinifiedUrl>(jsonContent);
 
             var create = new CreateUrlHandler();
-            await create.Execute(data);
+            minifiedUrl = create.Execute(data);
 
             return req.CreateResponse(HttpStatusCode.Created, $"api/{data.MinifiedSlug}");
         }
