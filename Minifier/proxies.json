@@ -11,7 +11,7 @@
     "acmechallenge": {
       "matchCondition": {
         "methods": [ "GET", "POST" ],
-        "route": "/.well-known/acme-challenge/{*rest}"
+        "route": "/.well-known/acme-challenge/{rest}"
       },
       "backendUri": "https://%WEBSITE_HOSTNAME%/api/letsencrypt/{rest}"
     }

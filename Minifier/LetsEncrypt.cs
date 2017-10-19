@@ -11,7 +11,7 @@ namespace Minifier
     {
         [FunctionName("letsencrypt")]
         public static HttpResponseMessage Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "{code}")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "letsencrypt/{code}")]
             HttpRequestMessage req, 
             string code, 
             TraceWriter log)
