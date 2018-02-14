@@ -1,5 +1,4 @@
 ﻿using System;
-using Minifier.DataAccess;
 using Minifier.Model;
 
 namespace Minifier.Business
