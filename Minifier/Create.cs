@@ -1,7 +1,5 @@
-using System.Configuration;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -14,28 +12,34 @@ namespace Minifier
     public static class Create
     {
         [FunctionName("Create")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "create")]HttpRequestMessage req, 
-            Binder binder,
+        public static HttpResponseMessage Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "create")] HttpRequestMessage req, 
+            [ServiceBus("new-urls", Connection = "CreateNewUrlsServiceBusConnection")] out MinifiedUrl outputUrl,
             TraceWriter log)
         {
             string jsonContent = req.Content.ReadAsStringAsync().Result;
             var data = JsonConvert.DeserializeObject<MinifiedUrl>(jsonContent);
-            var secret = new Secret();
-            var connectionString = await secret.Get("CosmosConnectionStringSecret");
-            ConfigurationManager.AppSettings["CosmosConnectionString"] = connectionString;
 
-            var output = await binder.BindAsync<IAsyncCollector<MinifiedUrl>>(new DocumentDBAttribute("TablesDB", "minified-urls")
+            if (!Validate(data))
             {
-                CreateIfNotExists = true,
-                ConnectionStringSetting = "CosmosConnectionString",
-            });
-
+                outputUrl = null;
+                return req.CreateResponse(HttpStatusCode.BadRequest);
+            }
             var create = new CreateUrlHandler();
-            var minifiedUrl = create.Execute(data);
-
-            await output.AddAsync(minifiedUrl);
+            outputUrl = create.Execute(data);
             
             return req.CreateResponse(HttpStatusCode.Created, $"api/{data.MinifiedSlug}");
+        }
+
+        private static bool Validate(MinifiedUrl inputDocument)
+        {
+            if (string.IsNullOrEmpty(inputDocument.FullUrl) ||
+                string.IsNullOrEmpty(inputDocument.MinifiedSlug))
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
