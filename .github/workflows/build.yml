@@ -46,7 +46,7 @@ jobs:
 
       - name: Restore Nuget packages
         shell: powershell
-        run: nuget restore -v:n
+        run: nuget restore
 
       - name: Build Project for .Net 4.6
         shell: powershell
