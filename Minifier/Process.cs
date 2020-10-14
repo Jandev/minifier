@@ -30,10 +30,6 @@ namespace Minifier
 
         private static async Task<IAsyncCollector<MinifiedUrl>> CreateOutputBinding(Binder binder)
         {
-            var secret = new Secret();
-            var connectionString = await secret.Get("CosmosConnectionStringSecret");
-            ConfigurationManager.AppSettings["CosmosConnectionString"] = connectionString;
-
             var output = await binder.BindAsync<IAsyncCollector<MinifiedUrl>>(
                 new DocumentDBAttribute("TablesDB", "minified-urls")
                 {
