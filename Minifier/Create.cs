@@ -33,7 +33,8 @@ namespace Minifier
 
         private static bool Validate(MinifiedUrl inputDocument)
         {
-            if (string.IsNullOrEmpty(inputDocument.FullUrl) ||
+            if (inputDocument == null ||
+                string.IsNullOrEmpty(inputDocument.FullUrl) ||
                 string.IsNullOrEmpty(inputDocument.MinifiedSlug))
             {
                 return false;
