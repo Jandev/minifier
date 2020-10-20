@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="proxies.json" />
@@ -11,21 +11,20 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.DocumentDB" Version="1.19.1" />
-    <PackageReference Include="Microsoft.Azure.KeyVault" Version="2.3.2" />
-    <PackageReference Include="Microsoft.Azure.WebJobs" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DocumentDB" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Azure.WebJobs.ServiceBus" Version="2.1.0-beta1" />
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="3.19.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.7" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.IdentityModel" />
+    <PackageReference Include="Azure.Security.KeyVault.Keys" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.22" />
+    <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.12.0" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions" Version="3.0.6" />
+    <PackageReference Include="Microsoft.Azure.DocumentDB" Version="2.12.0" />
+    <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.12.0" />
+    <PackageReference Include="Microsoft.Azure.DocumentDB.ChangeFeedProcessor" Version="2.3.2" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DocumentDB" Version="1.3.0" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.2" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ServiceBus" Version="4.2.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.8" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.9" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
