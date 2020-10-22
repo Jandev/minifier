@@ -47,16 +47,11 @@ jobs:
         shell: powershell
         run: Compress-Archive ./Minifier/bin/Release/*/* ./Minifier/bin/Release/minifier_release.zip
 
-      - name: Get Release version
-        id: get-version
-        run: Write-Output ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
-
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          name: URL Minifier in Azure v${{ steps.get-version.outputs.version }}
-          tag: ${{ steps.get-version.outputs.version }}
+          name: URL Minifier in Azure
           body: 'All notable changes to this version has been documented in the CHANGELOG.md file.'
           # This will update existing tags if any
           allowUpdates: true

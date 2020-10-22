@@ -4,6 +4,8 @@ on:
   push:
     paths-ignore:
       - '**.md'
+    tags-ignore:
+      - '*'
 
   pull_request:
     branches:
@@ -12,9 +14,6 @@ on:
 
 jobs:
   build:
-    # Do not run useless build when pushing tag
-    if: ${{ github.event_name != 'push tag' }}
-
     name: Windows (.Net 4.6)
     runs-on: windows-latest
 
