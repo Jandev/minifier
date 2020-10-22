@@ -43,9 +43,13 @@ jobs:
         shell: powershell
         run: MSBuild -p:Configuration=Release -detailedSummary -noLogo
 
+      - name: Compress Build Artifacts
+        shell: powershell
+        run: Compress-Archive ./Minifier/bin/Release/*/* ./Minifier/bin/Release/minifier_release.zip
+
       - name: Get Release version
         id: get-version
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+        run: Write-Output ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
 
       - name: Create Release
         uses: ncipollo/release-action@v1
@@ -56,7 +60,7 @@ jobs:
           body: 'All notable changes to this version has been documented in the CHANGELOG.md file.'
           # This will update existing tags if any
           allowUpdates: true
-          artifacts: ${{ github.workspace }}/Minifier/bin/Release/*/*
+          artifacts: ${{ github.workspace }}/Minifier/bin/Release/minifier_release.zip
           artifactContentType: application/octet-stream
 
       - name: Deploy app to Azure
