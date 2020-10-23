@@ -1,18 +1,12 @@
-name: Build
+name: Release
 
 on:
   push:
-    paths-ignore:
-      - '**.md'
-
-  pull_request:
-    branches:
-      - 'master'
-      - 'develop'
+    tags:
+      - '*'
 
 jobs:
   build:
-    name: Windows (.Net 4.6)
     runs-on: windows-latest
 
     env:
@@ -26,8 +20,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
 
       - name: Setup Nuget cache
         uses: actions/cache@v2
@@ -49,4 +41,22 @@ jobs:
 
       - name: Build Project for .Net 4.6
         shell: powershell
-        run: MSBuild -p:Configuration=Debug -detailedSummary -noLogo
+        run: MSBuild -p:Configuration=Release -detailedSummary -noLogo
+
+      - name: Compress Build Artifacts
+        shell: powershell
+        run: Compress-Archive ./Minifier/bin/Release/*/* ./Minifier/bin/Release/minifier_release.zip
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: URL Minifier in Azure
+          body: 'All notable changes to this version has been documented in the CHANGELOG.md file.'
+          # This will update existing tags if any
+          allowUpdates: true
+          artifacts: ${{ github.workspace }}/Minifier/bin/Release/minifier_release.zip
+          artifactContentType: application/octet-stream
+
+      - name: Deploy app to Azure
+        run: echo "::warning file=Under development..."
