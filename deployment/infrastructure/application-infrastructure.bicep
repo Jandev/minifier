@@ -168,6 +168,62 @@ resource configBackend 'Microsoft.Web/sites/config@2020-12-01' = {
   }
 }
 
-output webApplicationName string = functionApp.outputs.webAppName
-output webApplicationNameBackend string = functionAppBackend.outputs.webAppName
-output resourceGroupLocation string = resourceGroup().location
+module databaseAccount 'DocumentDB/databaseAccount.bicep' = {
+  name: 'databaseAccount'
+  params: {
+    azureRegion: azureRegion
+    environmentName: environmentName
+    systemName: systemName
+  }
+}
+
+module sqlDatabase 'DocumentDB/sqlDatabase.bicep' = {
+  name: 'sqlDatabase'
+  params: {
+    databaseAccountName: databaseAccount.outputs.accountName
+    databaseName: systemName
+  }
+}
+
+module slugContainer 'DocumentDB/minifierContainer.bicep' = {
+  name: 'slugContainer'
+  params: {
+    accountName: databaseAccount.outputs.accountName
+    databaseName: sqlDatabase.outputs.databaseName
+  }
+}
+
+module serviceBusNamespace 'ServiceBus/namespace.bicep' = {
+  name: 'serviceBusNamespace'
+  params: {
+    azureRegion: azureRegion
+    environmentName: environmentName
+    systemName: systemName
+  }
+}
+
+module topic 'ServiceBus/topic.bicep' = {
+  name: 'serviceBusTopic'
+  params: {
+    name: 'incoming-minified-urls'
+    namespaceName: serviceBusNamespace.outputs.name
+  }
+}
+
+module processSubscription 'ServiceBus/subscription.bicep' = {
+  name: 'processSubscription'
+  params: {
+    name: 'process'
+    namespaceName: serviceBusNamespace.outputs.name
+    topicName: topic.outputs.name
+  }
+}
+
+module invalidateSubscription 'ServiceBus/subscription.bicep' = {
+  name: 'invalidateSubscription'
+  params: {
+    name: 'invalidate${azureRegion}'
+    namespaceName: serviceBusNamespace.outputs.name
+    topicName: topic.outputs.name
+  }
+}

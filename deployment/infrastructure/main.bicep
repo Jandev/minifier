@@ -18,7 +18,7 @@ resource rgWestEurope 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 }
 
 module applicationWestEurope 'application-infrastructure.bicep' = {
-  name: 'guidApiWestEurope'
+  name: '${systemName}${regionWestEuropeName}'
   params: {
     azureRegion: regionWestEuropeName
     environmentName: environmentName
