@@ -7,11 +7,14 @@ on:
 
 env:
   AZURE_FUNCTIONAPP_NAME_EU1: minifier-prod-weu-app
+  AZURE_FUNCTIONAPP_BACKEND_NAME_EU1: minifierbackend-prod-weu-app
   AZURE_RESOURCEGROUP_NAME_EU1: minifier-prod-weu
   AZURE_FUNCTIONAPP_PACKAGE_PATH: "."
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 6.x
   WORKING_DIRECTORY: src
+  FRONTEND_PROJECT_FILE: "./src/Minifier/Minifier.Frontend.csproj"
+  BACKEND_PROJECT_FILE: "./src/Minifier/Minifier.Backend.csproj"
 jobs:
   compile-functions-app:
     runs-on: ubuntu-latest
@@ -29,21 +32,37 @@ jobs:
       - name: Dotnet build
         run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
 
-      - name: Dotnet publish
-        run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output"
+      - name: Dotnet publish frontend
+        run: dotnet publish "${{ env.FRONTEND_PROJECT_FILE }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/frontend"
 
-      - name: "Zip published content"
+      - name: Dotnet publish backend
+        run: dotnet publish "${{ env.BACKEND_PROJECT_FILE }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/backend"
+
+      - name: "Zip published frontend content"
         uses: vimtor/action-zip@v1
         with:
-          files: ./output/
+          files: ./frontend/
           recursive: true
-          dest: artifact.zip
+          dest: frontend.zip
 
-      - name: Publish Functions artifact
+      - name: Publish frontend artifact
         uses: actions/upload-artifact@v2
         with:
-          name: functions-artifact
-          path: artifact.zip
+          name: frontend-functions-artifact
+          path: frontend.zip
+
+      - name: "Zip published backend content"
+        uses: vimtor/action-zip@v1
+        with:
+          files: ./backend/
+          recursive: true
+          dest: backend.zip
+
+      - name: Publish backend artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: backend-functions-artifact
+          path: backend.zip
 
   publish-bicep:
     runs-on: ubuntu-latest
@@ -79,17 +98,26 @@ jobs:
     needs: [compile-functions-app, infrastructure-incremental]
     runs-on: ubuntu-latest
     steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: functions-artifact
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_DEV }}
+      - name: Download backend artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: backend-functions-artifact
+      - name: "Deploy backend web app - EU1"
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_BACKEND_NAME_EU1 }}
+          package: "backend.zip"
 
-      - name: "Deploy web app - EU1"
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: frontend-functions-artifact
+      - name: "Deploy frontend web app - EU1"
         uses: Azure/functions-action@v1
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_EU1 }}
-          package: "artifact.zip"
+          package: "frontend.zip"
