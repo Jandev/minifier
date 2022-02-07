@@ -1,62 +1,95 @@
-name: Release
-
+name: Build and deploy the Minifier solution
 on:
+  workflow_dispatch:
   push:
-    tags:
-      - '*'
+    branches:
+      - main
 
+env:
+  AZURE_FUNCTIONAPP_NAME_EU1: minifier-prod-weu-app
+  AZURE_RESOURCEGROUP_NAME_EU1: minifier-prod-weu
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: "."
+  CONFIGURATION: Release
+  DOTNET_CORE_VERSION: 6.x
+  WORKING_DIRECTORY: src
 jobs:
-  build:
-    runs-on: windows-latest
-
-    env:
-      COREHOST_TRACE: false
-      # Disable sending usage data to Microsoft
-      DOTNET_CLI_TELEMETRY_OPTOUT: 1
-      # prevent the caching of the packages on the build machine
-      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-      # prevent the download of the XML documentation for the packages
-      NUGET_XMLDOC_MODE: skip
-
+  compile-functions-app:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup Nuget cache
-        uses: actions/cache@v2
-        id: nuget-cache
+      - name: Setup .NET Core ${{ env.DOTNET_CORE_VERSION }}
+        uses: actions/setup-dotnet@v1
         with:
-          path: ~/.nuget
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/Minifier/Minifier.csproj') }}
-          restore-keys: ${{ runner.os }}-nuget-
+          dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
 
-      - name: Add MSBuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.1
+      - name: Dotnet restore
+        run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
 
-      - name: Setup Nuget
-        uses: nuget/setup-nuget@v1.0.2
+      - name: Dotnet build
+        run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
 
-      - name: Restore Nuget packages
-        shell: powershell
-        run: nuget restore
+      - name: Dotnet publish
+        run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output"
 
-      - name: Build Project for .Net 4.6
-        shell: powershell
-        run: MSBuild -p:Configuration=Release -detailedSummary -noLogo
-
-      - name: Compress Build Artifacts
-        shell: powershell
-        run: Compress-Archive ./Minifier/bin/Release/*/* ./Minifier/bin/Release/minifier_release.zip
-
-      - name: Create Release
-        uses: ncipollo/release-action@v1
+      - name: "Zip published content"
+        uses: vimtor/action-zip@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          name: URL Minifier in Azure
-          body: 'All notable changes to this version has been documented in the CHANGELOG.md file.'
-          # This will update existing tags if any
-          allowUpdates: true
-          artifacts: ${{ github.workspace }}/Minifier/bin/Release/minifier_release.zip
-          artifactContentType: application/octet-stream
+          files: ./output/
+          recursive: true
+          dest: artifact.zip
 
-      - name: Deploy app to Azure
-        run: echo "::warning file=Under development..."
+      - name: Publish Functions artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: functions-artifact
+          path: artifact.zip
+
+  publish-bicep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: bicep-templates
+          path: deployment/infrastructure/
+
+  infrastructure-incremental:
+    needs: publish-bicep
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: bicep-templates
+          path: ./infrastructure
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_DEV }}
+
+      - name: Deploy Infrastructure
+        id: deployinfrastructure
+        uses: Azure/cli@1.0.4
+        with:
+          inlineScript: az deployment sub create --location WestEurope --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.json
+
+  deploy-functions:
+    needs: [compile-functions-app, infrastructure-incremental]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: functions-artifact
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_DEV }}
+
+      - name: "Deploy web app - EU1"
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_EU1 }}
+          package: "artifact.zip"
