@@ -1,6 +1,7 @@
 # URL Minifier in Azure
 
-[![Build status][actions build badge]][actions build link]
+[![Build status][actions build badge]][actions build link]  
+[![Build and deploy solution][actions build and deploy badge]][actions build and deploy link]
 
 A URL minifier which works with Azure Functions, and a couple of other Azure services, just because we can!
 
@@ -38,5 +39,7 @@ There aren't any deployment scripts at the moment, so you have to set everything
 
 <!-- Aliases for URLs: please place here any long urls to keep clean markdown markup -->
 
-[actions build badge]: https://github.com/Jandev/minifier/workflows/Build/badge.svg "Build status"
-[actions build link]: https://github.com/Jandev/minifier/actions?query=workflow%3A%22Build%22
+[actions build badge]: https://github.com/Jandev/minifier/actions/workflows/build.yml/badge.svg "Build solution"
+[actions build link]: https://github.com/Jandev/minifier/actions/workflows/build.yml
+[actions build and deploy badge]: https://github.com/Jandev/minifier/actions/workflows/release.yml/badge.svg "Build and deploy solution"
+[actions build and deploy link]: https://github.com/Jandev/minifier/actions/workflows/release.yml
