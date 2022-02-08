@@ -16,6 +16,13 @@ var webAppNameBackend = '${backendSystemName}-${environmentName}-${azureRegion}-
 
 targetScope = 'resourceGroup'
 
+// Authorization roles
+var storageAccountBlobDataReaderAuthorizationRoleId = '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1' // Storage Blob Data Reader
+// Deployment Storage Account details
+var deploymentStorageAccountName = '${systemName}deploy${environmentName}${azureRegion}sa'
+resource deploymentStorageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' existing = {
+  name: deploymentStorageAccountName
+}
 
 module applicationInsights 'Insights/components.bicep' = {
   name: 'applicationInsightsDeploy'
@@ -56,6 +63,23 @@ module functionApp 'Web/functions.bicep' = {
     systemName: systemName
     azureRegion: azureRegion
     appServicePlanId: appServicePlan.outputs.id
+  }
+}
+
+module authorizationDeployStorageAccount 'Authorization/roleAssignmentsStorageAccount.bicep' = {
+  name: 'deploymentStorageAccountReaderAuthorization'
+  params: {
+    principalId: functionApp.outputs.servicePrincipal
+    roleDefinitionId: storageAccountBlobDataReaderAuthorizationRoleId
+    storageAccountName: deploymentStorageAccountName
+  }
+}
+module authorizationWebjobStorageAccount 'Authorization/roleAssignmentsStorageAccount.bicep' = {
+  name: 'authorizationWebjobStorageAccount'
+  params: {
+    principalId: functionApp.outputs.servicePrincipal
+    roleDefinitionId: storageAccountBlobDataReaderAuthorizationRoleId
+    storageAccountName: webApiStorageAccount.outputs.storageAccountName
   }
 }
 
@@ -132,6 +156,23 @@ module functionAppBackend 'Web/functions.bicep' = {
     systemName: backendSystemName
     azureRegion: azureRegion
     appServicePlanId: appServicePlanBackend.outputs.id
+  }
+}
+
+module authorizationDeployStorageAccountBackend 'Authorization/roleAssignmentsStorageAccount.bicep' = {
+  name: 'deploymentStorageAccountReaderAuthorizationBackend'
+  params: {
+    principalId: functionAppBackend.outputs.servicePrincipal
+    roleDefinitionId: storageAccountBlobDataReaderAuthorizationRoleId
+    storageAccountName: deploymentStorageAccountName
+  }
+}
+module authorizationWebjobStorageAccountBackend 'Authorization/roleAssignmentsStorageAccount.bicep' = {
+  name: 'authorizationWebjobStorageAccountBackend'
+  params: {
+    principalId: functionAppBackend.outputs.servicePrincipal
+    roleDefinitionId: storageAccountBlobDataReaderAuthorizationRoleId
+    storageAccountName: webApiStorageAccountBackend.outputs.storageAccountName
   }
 }
 
