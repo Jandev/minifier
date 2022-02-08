@@ -75,7 +75,7 @@ jobs:
           path: deployment/infrastructure/
 
   infrastructure-incremental:
-    needs: publish-basic-infrastructure
+    needs: publish-bicep
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifact
@@ -100,6 +100,7 @@ jobs:
               --parameters \
                 frontendPackageReferenceLocation 'https://jan-v.nl/frontend.zip' \
                 backendPackageReferenceLocation 'https://jan-v.nl/backend.zip'
+
   deploy-functions:
     needs: [compile-functions-app, infrastructure-incremental]
     runs-on: ubuntu-latest
