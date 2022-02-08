@@ -96,8 +96,9 @@ jobs:
             az deployment sub create --location WestEurope 
               --template-file ./infrastructure/main.bicep 
               --parameters ./infrastructure/parameters.json
-              -frontendPackageReferenceLocation 'https://jan-v.nl/frontend.zip'
-              -backendPackageReferenceLocation 'https://jan-v.nl/backend.zip'
+              --parameters
+                frontendPackageReferenceLocation 'https://jan-v.nl/frontend.zip'
+                backendPackageReferenceLocation 'https://jan-v.nl/backend.zip'
 
   deploy-functions:
     needs: [compile-functions-app, infrastructure-incremental]
