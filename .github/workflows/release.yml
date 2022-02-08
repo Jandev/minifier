@@ -15,6 +15,12 @@ env:
   WORKING_DIRECTORY: src
   FRONTEND_PROJECT_FILE: "./src/Minifier.Frontend/Minifier.Frontend.csproj"
   BACKEND_PROJECT_FILE: "./src/Minifier.Backend/Minifier.Backend.csproj"
+  GITHUB_SHA: ${{ github.sha }}
+  DEPLOYMENT_STORAGEACCOUNT_NAME: minifierdeployprodweusa
+  DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME: deployments
+  DEPLOYMENT_BACKEND_URL: https://${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME }}.blob.core.windows.net/${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}/${{ env.GITHUB_SHA }}/backend.zip
+  DEPLOYMENT_FRONTEND_URL: https://${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME }}.blob.core.windows.net/${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}/${{ env.GITHUB_SHA }}/frontend.zip
+
 jobs:
   compile-functions-app:
     runs-on: ubuntu-latest
@@ -74,7 +80,7 @@ jobs:
           name: bicep-templates
           path: deployment/infrastructure/
 
-  infrastructure-incremental:
+  basic-infrastructure:
     needs: publish-bicep
     runs-on: ubuntu-latest
     steps:
@@ -92,10 +98,10 @@ jobs:
         id: deployinfrastructure
         uses: Azure/cli@1.0.4
         with:
-          inlineScript: az deployment sub create --location WestEurope --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.json --parameters frontendPackageReferenceLocation='https://jan-v.nl/frontend.zip' backendPackageReferenceLocation='https://jan-v.nl/backend.zip'
+          inlineScript: az deployment sub create --location WestEurope --template-file ./infrastructure/basic-infrastructure.bicep --parameters ./infrastructure/parameters.json
 
-  deploy-functions:
-    needs: [compile-functions-app, infrastructure-incremental]
+  deploy-functions-package:
+    needs: [compile-functions-app, basic-infrastructure]
     runs-on: ubuntu-latest
     steps:
       - name: Azure Login
@@ -106,18 +112,63 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: backend-functions-artifact
-      - name: "Deploy backend web app - EU1"
-        uses: Azure/functions-action@v1
-        with:
-          app-name: ${{ env.AZURE_FUNCTIONAPP_BACKEND_NAME_EU1 }}
-          package: "backend.zip"
-
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with:
           name: frontend-functions-artifact
-      - name: "Deploy frontend web app - EU1"
-        uses: Azure/functions-action@v1
+
+      - name: Deploy packages
+        id: deployinfrastructure
+        uses: Azure/cli@1.0.4
         with:
-          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_EU1 }}
-          package: "frontend.zip"
+          inlineScript: |
+            az storage blob upload -f '/${{ env.GITHUB_SHA }}/backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME }}
+            az storage blob upload -f '/${{ env.GITHUB_SHA }}/frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME }}
+
+  application-infrastructure:
+    needs: publish-bicep
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: bicep-templates
+          path: ./infrastructure
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_DEV }}
+
+      - name: Deploy Infrastructure
+        id: deployinfrastructure
+        uses: Azure/cli@1.0.4
+        with:
+          inlineScript: az deployment sub create --location WestEurope --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.json --parameters frontendPackageReferenceLocation='${{ env.DEPLOYMENT_FRONTEND_URL}}' backendPackageReferenceLocation='${{ env.DEPLOYMENT_BACKEND_URL }}'
+
+  # deploy-functions:
+  #   needs: [compile-functions-app, application-infrastructure]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Azure Login
+  #       uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.AZURE_DEV }}
+  #     - name: Download backend artifact
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: backend-functions-artifact
+  #     - name: "Deploy backend web app - EU1"
+  #       uses: Azure/functions-action@v1
+  #       with:
+  #         app-name: ${{ env.AZURE_FUNCTIONAPP_BACKEND_NAME_EU1 }}
+  #         package: "backend.zip"
+
+  #     - name: Download Artifact
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: frontend-functions-artifact
+  #     - name: "Deploy frontend web app - EU1"
+  #       uses: Azure/functions-action@v1
+  #       with:
+  #         app-name: ${{ env.AZURE_FUNCTIONAPP_NAME_EU1 }}
+  #         package: "frontend.zip"
