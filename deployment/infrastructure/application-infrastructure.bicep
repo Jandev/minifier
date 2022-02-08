@@ -17,7 +17,10 @@ var webAppNameBackend = '${backendSystemName}-${environmentName}-${azureRegion}-
 targetScope = 'resourceGroup'
 
 // Authorization roles
+// You can get these by running the command `az role definition list --query "[].{name:name, roleType:roleType, roleName:roleName}" --output tsv`
 var storageAccountBlobDataReaderAuthorizationRoleId = '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1' // Storage Blob Data Reader
+var storageAccountBlobDataOwnerAuthorizationRoleId = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b' // Storage Blob Data Owner
+var storageAccountQueueDataContributorAuthorizationRoleId = '974c5e8b-45b9-4653-ba55-5f855dd0fb88' // Storage Queue Data Contributor
 // Deployment Storage Account details
 var deploymentStorageAccountName = '${systemName}deploy${environmentName}${azureRegion}sa'
 resource deploymentStorageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' existing = {
@@ -66,7 +69,25 @@ module functionApp 'Web/functions.bicep' = {
   }
 }
 
-module authorizationDeployStorageAccount 'Authorization/roleAssignmentsStorageAccount.bicep' = {
+module authorizationWebApiStorageAccountBlob 'Authorization/roleAssignmentsStorageAccount.bicep' = {
+  name: 'authorizationWebApiStorageAccountBlob'
+  params: {
+    principalId: functionApp.outputs.servicePrincipal
+    roleDefinitionId: storageAccountBlobDataOwnerAuthorizationRoleId
+    storageAccountName: webApiStorageAccount.outputs.storageAccountName
+  }
+}
+
+module authorizationWebApiStorageAccountQueue 'Authorization/roleAssignmentsStorageAccount.bicep' = {
+  name: 'authorizationWebApiStorageAccountQueue'
+  params: {
+    principalId: functionApp.outputs.servicePrincipal
+    roleDefinitionId: storageAccountQueueDataContributorAuthorizationRoleId
+    storageAccountName: webApiStorageAccount.outputs.storageAccountName
+  }
+}
+
+module authorizationDeploymentStorageAccount 'Authorization/roleAssignmentsStorageAccount.bicep' = {
   name: 'deploymentStorageAccountReaderAuthorization'
   params: {
     principalId: functionApp.outputs.servicePrincipal
@@ -103,16 +124,16 @@ resource config 'Microsoft.Web/sites/config@2020-12-01' = {
         value: 'azure-function'
       }
       {
-        name: 'AzureWebJobsStorage'
-        value: webApiStorageAccount.outputs.connectionString
-      }
-      {
-        name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-        value: webApiStorageAccount.outputs.connectionString
-      }
-      {
         name: 'RUN_FROM_PACKAGE'
         value: frontendPackageReferenceLocation
+      }
+      {
+        name: 'AzureWebJobsStorage__blobServiceUri'
+        value: 'https://${webApiStorageAccount.outputs.storageAccountName}.blob.${environment().suffixes.storage}'
+      }
+      {
+        name: 'AzureWebJobsStorage__queueServiceUri'
+        value: 'https://${webApiStorageAccount.outputs.storageAccountName}.queue.${environment().suffixes.storage}'
       }
     ]
   }
@@ -151,11 +172,26 @@ module functionAppBackend 'Web/functions.bicep' = {
   }
 }
 
-module authorizationDeployStorageAccountBackend 'Authorization/roleAssignmentsStorageAccount.bicep' = {
+module authorizationWebApiStorageAccountBackendBlob 'Authorization/roleAssignmentsStorageAccount.bicep' = {
+  name: 'authorizationWebApiStorageAccountBackendBlob'
+  params: {
+    principalId: functionAppBackend.outputs.servicePrincipal
+    roleDefinitionId: storageAccountBlobDataOwnerAuthorizationRoleId
+    storageAccountName: webApiStorageAccountBackend.outputs.storageAccountName
+  }
+}
+
+module authorizationWebApiStorageAccountBackendQueue 'Authorization/roleAssignmentsStorageAccount.bicep' = {
+  name: 'authorizationWebApiStorageAccountBackendQueue'
+  params: {
+    principalId: functionAppBackend.outputs.servicePrincipal
+    roleDefinitionId: storageAccountQueueDataContributorAuthorizationRoleId
+    storageAccountName: webApiStorageAccountBackend.outputs.storageAccountName
+  }
+}
+
+module authorizationDeploymentStorageAccountBackendBackend 'Authorization/roleAssignmentsStorageAccount.bicep' = {
   name: 'deploymentStorageAccountReaderAuthorizationBackend'
-  dependsOn:[ 
-    authorizationDeployStorageAccount 
-  ]
   params: {
     principalId: functionAppBackend.outputs.servicePrincipal
     roleDefinitionId: storageAccountBlobDataReaderAuthorizationRoleId
@@ -191,16 +227,16 @@ resource configBackend 'Microsoft.Web/sites/config@2020-12-01' = {
         value: 'azure-function'
       }
       {
-        name: 'AzureWebJobsStorage'
-        value: webApiStorageAccountBackend.outputs.connectionString
-      }
-      {
-        name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-        value: webApiStorageAccountBackend.outputs.connectionString
-      }
-      {
         name: 'RUN_FROM_PACKAGE'
         value: backendPackageReferenceLocation
+      }
+      {
+        name: 'AzureWebJobsStorage__blobServiceUri'
+        value: 'https://${webApiStorageAccountBackend.outputs.storageAccountName}.blob.${environment().suffixes.storage}'
+      }
+      {
+        name: 'AzureWebJobsStorage__queueServiceUri'
+        value: 'https://${webApiStorageAccountBackend.outputs.storageAccountName}.queue.${environment().suffixes.storage}'
       }
     ]
   }

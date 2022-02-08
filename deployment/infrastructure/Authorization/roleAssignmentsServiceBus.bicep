@@ -8,7 +8,7 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2021-11-01' existi
 }
 
 resource symbolicname 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(roleDefinitionId)
+  name: guid('${principalId}${roleDefinitionId}')
   scope: serviceBusNamespace
   properties: {
     principalId: principalId
