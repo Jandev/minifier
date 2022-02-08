@@ -135,6 +135,11 @@ resource config 'Microsoft.Web/sites/config@2020-12-01' = {
         name: 'AzureWebJobsStorage__queueServiceUri'
         value: 'https://${webApiStorageAccount.outputs.storageAccountName}.queue.${environment().suffixes.storage}'
       }
+      // This one shouldn't be necessary, but can remove it later on.
+      {
+        name: 'AzureWebJobsStorage'
+        value: 'https://${webApiStorageAccount.outputs.storageAccountName}.blob.${environment().suffixes.storage}'
+      }
       // This one shouldn't be here, but: https://twitter.com/Jan_de_V/status/1491136532165832704
       {
         name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
@@ -242,6 +247,11 @@ resource configBackend 'Microsoft.Web/sites/config@2020-12-01' = {
       {
         name: 'AzureWebJobsStorage__queueServiceUri'
         value: 'https://${webApiStorageAccountBackend.outputs.storageAccountName}.queue.${environment().suffixes.storage}'
+      }
+      // This one shouldn't be necessary, but can remove it later on.
+      {
+        name: 'AzureWebJobsStorage'
+        value: 'https://${webApiStorageAccountBackend.outputs.storageAccountName}.blob.${environment().suffixes.storage}'
       }
       // This one shouldn't be here, but: https://twitter.com/Jan_de_V/status/1491136532165832704
       {
