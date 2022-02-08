@@ -7,6 +7,8 @@
 param environmentName string
 param azureRegion string
 param systemName string
+param frontendPackageReferenceLocation string
+param backendPackageReferenceLocation string
 
 var webAppName = '${systemName}-${environmentName}-${azureRegion}-app'
 var backendSystemName = '${systemName}backend'
@@ -92,6 +94,10 @@ resource config 'Microsoft.Web/sites/config@2020-12-01' = {
         name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
         value: webApiStorageAccount.outputs.connectionString
       }
+      {
+        name: 'RUN_FROM_PACKAGE'
+        value: frontendPackageReferenceLocation
+      }
     ]
   }
 }
@@ -163,6 +169,10 @@ resource configBackend 'Microsoft.Web/sites/config@2020-12-01' = {
       {
         name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
         value: webApiStorageAccountBackend.outputs.connectionString
+      }
+      {
+        name: 'RUN_FROM_PACKAGE'
+        value: backendPackageReferenceLocation
       }
     ]
   }
