@@ -12,7 +12,7 @@ resource symbolicname 'Microsoft.Authorization/roleAssignments@2020-04-01-previe
   scope: storageAccount
   properties: {
     principalId: principalId
-    roleDefinitionId: 'Microsoft.Authorization/roleDefinitions/${roleDefinitionId}'
+    roleDefinitionId: '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/${roleDefinitionId}'
     principalType: 'ServicePrincipal'
   }
 }
