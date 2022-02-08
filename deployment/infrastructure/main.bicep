@@ -28,7 +28,7 @@ module deploymentStorageWestEurope 'Storage/storageAccounts.bicep' = {
   params: {
     azureRegion: regionWestEuropeName
     environmentName: environmentName
-    systemName: systemName
+    systemName: '${systemName}deploy'
   }
 }
 module deploymentContainer 'Storage/container.bicep' = {
