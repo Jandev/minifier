@@ -153,6 +153,7 @@ module functionAppBackend 'Web/functions.bicep' = {
 
 module authorizationDeployStorageAccountBackend 'Authorization/roleAssignmentsStorageAccount.bicep' = {
   name: 'deploymentStorageAccountReaderAuthorizationBackend'
+  dependsOn:[ authorizationDeployStorageAccount ]
   params: {
     principalId: functionAppBackend.outputs.servicePrincipal
     roleDefinitionId: storageAccountBlobDataReaderAuthorizationRoleId
