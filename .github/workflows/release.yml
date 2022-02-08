@@ -92,12 +92,12 @@ jobs:
         id: deployinfrastructure
         uses: Azure/cli@1.0.4
         with:
-          inlineScript: |
-            az deployment sub create --location WestEurope \
-              --template-file ./infrastructure/main.bicep \
-              --parameters ./infrastructure/parameters.json \
-              --parameters \
-                frontendPackageReferenceLocation 'https://jan-v.nl/frontend.zip' \
+          inlineScript: >
+            az deployment sub create --location WestEurope 
+              --template-file ./infrastructure/main.bicep 
+              --parameters ./infrastructure/parameters.json 
+              --parameters 
+                frontendPackageReferenceLocation 'https://jan-v.nl/frontend.zip' 
                 backendPackageReferenceLocation 'https://jan-v.nl/backend.zip'
 
   deploy-functions:
