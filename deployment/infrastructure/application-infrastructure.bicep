@@ -74,14 +74,6 @@ module authorizationDeployStorageAccount 'Authorization/roleAssignmentsStorageAc
     storageAccountName: deploymentStorageAccountName
   }
 }
-module authorizationWebjobStorageAccount 'Authorization/roleAssignmentsStorageAccount.bicep' = {
-  name: 'authorizationWebjobStorageAccount'
-  params: {
-    principalId: functionApp.outputs.servicePrincipal
-    roleDefinitionId: storageAccountBlobDataReaderAuthorizationRoleId
-    storageAccountName: webApiStorageAccount.outputs.storageAccountName
-  }
-}
 
 resource config 'Microsoft.Web/sites/config@2020-12-01' = {
   dependsOn: [
@@ -165,14 +157,6 @@ module authorizationDeployStorageAccountBackend 'Authorization/roleAssignmentsSt
     principalId: functionAppBackend.outputs.servicePrincipal
     roleDefinitionId: storageAccountBlobDataReaderAuthorizationRoleId
     storageAccountName: deploymentStorageAccountName
-  }
-}
-module authorizationWebjobStorageAccountBackend 'Authorization/roleAssignmentsStorageAccount.bicep' = {
-  name: 'authorizationWebjobStorageAccountBackend'
-  params: {
-    principalId: functionAppBackend.outputs.servicePrincipal
-    roleDefinitionId: storageAccountBlobDataReaderAuthorizationRoleId
-    storageAccountName: webApiStorageAccountBackend.outputs.storageAccountName
   }
 }
 
