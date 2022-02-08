@@ -118,7 +118,7 @@ jobs:
           name: frontend-functions-artifact
 
       - name: Deploy packages
-        id: deployinfrastructure
+        id: deploypackages
         uses: Azure/cli@1.0.4
         with:
           inlineScript: |
@@ -126,7 +126,7 @@ jobs:
             az storage blob upload -f '/${{ env.GITHUB_SHA }}/frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME }}
 
   application-infrastructure:
-    needs: [publish-bicep, basic-infrastructure]
+    needs: [publish-bicep, basic-infrastructure, deploy-functions-package]
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifact
