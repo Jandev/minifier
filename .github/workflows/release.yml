@@ -18,8 +18,8 @@ env:
   GITHUB_SHA: ${{ github.sha }}
   DEPLOYMENT_STORAGEACCOUNT_NAME: minifierdeployprodweusa
   DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME: deployments
-  DEPLOYMENT_BACKEND_URL: https://${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME }}.blob.core.windows.net/${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}/${{ env.GITHUB_SHA }}/backend.zip
-  DEPLOYMENT_FRONTEND_URL: https://${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME }}.blob.core.windows.net/${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}/${{ env.GITHUB_SHA }}/frontend.zip
+  DEPLOYMENT_BACKEND_URL: https://minifierdeployprodweusa.blob.core.windows.net/deployments/${{ github.sha }}/backend.zip
+  DEPLOYMENT_FRONTEND_URL: https://minifierdeployprodweusa.blob.core.windows.net/deployments/${{ github.sha }}/frontend.zip
 
 jobs:
   compile-functions-app:
@@ -126,7 +126,7 @@ jobs:
             az storage blob upload -f '/${{ env.GITHUB_SHA }}/frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME }}
 
   application-infrastructure:
-    needs: publish-bicep
+    needs: [publish-bicep, basic-infrastructure]
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifact
