@@ -21,6 +21,7 @@ targetScope = 'resourceGroup'
 var storageAccountBlobDataReaderAuthorizationRoleId = '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1' // Storage Blob Data Reader
 var storageAccountBlobDataOwnerAuthorizationRoleId = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b' // Storage Blob Data Owner
 var storageAccountQueueDataContributorAuthorizationRoleId = '974c5e8b-45b9-4653-ba55-5f855dd0fb88' // Storage Queue Data Contributor
+var storageAccountContributorRoleId = '17d1049b-9a84-46fb-8f53-869881c3d3ab'	// Storage Account Contributor
 // Deployment Storage Account details
 var deploymentStorageAccountName = '${systemName}deploy${environmentName}${azureRegion}sa'
 resource deploymentStorageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' existing = {
@@ -83,6 +84,15 @@ module authorizationWebApiStorageAccountQueue 'Authorization/roleAssignmentsStor
   params: {
     principalId: functionApp.outputs.servicePrincipal
     roleDefinitionId: storageAccountQueueDataContributorAuthorizationRoleId
+    storageAccountName: webApiStorageAccount.outputs.storageAccountName
+  }
+}
+
+module authorizationWebApiStorageAccountContributor 'Authorization/roleAssignmentsStorageAccount.bicep' = {
+  name: 'authorizationWebApiStorageAccountContributor'
+  params: {
+    principalId: functionApp.outputs.servicePrincipal
+    roleDefinitionId: storageAccountContributorRoleId
     storageAccountName: webApiStorageAccount.outputs.storageAccountName
   }
 }
@@ -196,6 +206,15 @@ module authorizationWebApiStorageAccountBackendQueue 'Authorization/roleAssignme
   params: {
     principalId: functionAppBackend.outputs.servicePrincipal
     roleDefinitionId: storageAccountQueueDataContributorAuthorizationRoleId
+    storageAccountName: webApiStorageAccountBackend.outputs.storageAccountName
+  }
+}
+
+module authorizationWebApiStorageAccountBackendContributor 'Authorization/roleAssignmentsStorageAccount.bicep' = {
+  name: 'authorizationWebApiStorageAccountBackendContributor'
+  params: {
+    principalId: functionAppBackend.outputs.servicePrincipal
+    roleDefinitionId: storageAccountContributorRoleId
     storageAccountName: webApiStorageAccountBackend.outputs.storageAccountName
   }
 }
