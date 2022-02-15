@@ -12,7 +12,7 @@ resource sqlRoleAssignment 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignm
   parent: documentDbAccount
   properties: {
     principalId: principalId
-    roleDefinitionId: subscriptionResourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', roleDefinitionId)
+    roleDefinitionId: '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions/${documentDbAccount.name}/${roleDefinitionId}'
     scope: documentDbAccount.id
   }
 }
