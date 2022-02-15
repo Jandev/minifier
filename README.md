@@ -5,6 +5,8 @@
 
 A URL minifier which works with Azure Functions, and a couple of other Azure services, just because we can!
 
+# Application
+
 ## Supported actions
 
 - **Get** : Getting the corresponding url. We either get a `NotFound` code (`404`) or get redirected
@@ -36,6 +38,35 @@ You should add a file called `local.settings.json`, if you want to run the solut
 ### In Azure
 
 There aren't any deployment scripts at the moment, so you have to set everything up manually, including specifying all of the listed settings in the `Configuration` area of your Function App.
+
+# Deployment
+
+To deploy this solution you need to create a service principal in Azure which has the appropriate roles to create resource groups, all resources and set permissions (RBAC) to all these resources. The easiest way to set this up is by using the `Owner` role, as it has enough permissions to apply roles. However, keep in mind, this grants the service principal a lot of power on the entire subscription.
+
+```azcli
+az ad sp create-for-rbac --name "minifier" --role owner --sdk-auth
+```
+
+What I'm doing to limit this is to make this service principal a `Contributor`, which still grants it a lot of power, and applying the `Owner` role to the created resource group after the first (failed) deployment.
+
+After executing the command above, you should have an output similar to the following:
+
+```json
+{
+  "clientId": "d9816ed2-66f2-40f2-bcf0-1b222a910416",
+  "clientSecret": "someSuperSecret",
+  "subscriptionId": "fe2a1369-754c-4703-ba37-c3a864e1eac8",
+  "tenantId": "b491f32d-ecc5-43ba-9699-0860994360d7",
+  "activeDirectoryEndpointUrl": "https://login.microsoftonline.com",
+  "resourceManagerEndpointUrl": "https://management.azure.com/",
+  "activeDirectoryGraphResourceId": "https://graph.windows.net/",
+  "sqlManagementEndpointUrl": "https://management.core.windows.net:8443/",
+  "galleryEndpointUrl": "https://gallery.azure.com/",
+  "managementEndpointUrl": "https://management.core.windows.net/"
+}
+```
+
+Store this value in a GitHub secret called `AZURE_DEV` and you're good to go!
 
 <!-- Aliases for URLs: please place here any long urls to keep clean markdown markup -->
 
