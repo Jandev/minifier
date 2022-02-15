@@ -299,7 +299,7 @@ module slugContainer 'DocumentDB/minifierContainer.bicep' = {
   }
 }
 
-module repositoryBackendApplicationContributorAuthorization 'authorization/roleAssignmentsDocumentDB.bicep' = {
+module repositoryBackendApplicationContributorAuthorization 'Authorization/roleAssignmentsDocumentDB.bicep' = {
   name: 'repositoryBackendApplicationContributorAuthorization'
   params: {
     accountName: databaseAccount.outputs.accountName
@@ -310,7 +310,7 @@ module repositoryBackendApplicationContributorAuthorization 'authorization/roleA
   }
 }
 
-module repositoryBackendApplicationReaderAuthorization 'authorization/roleAssignmentsDocumentDB.bicep' = {
+module repositoryBackendApplicationReaderAuthorization 'Authorization/roleAssignmentsDocumentDB.bicep' = {
   name: 'repositoryBackendApplicationReaderAuthorization'
   params: {
     accountName: databaseAccount.outputs.accountName
@@ -321,7 +321,7 @@ module repositoryBackendApplicationReaderAuthorization 'authorization/roleAssign
   }
 }
 
-module repositoryFrontendApplicationAuthorization 'authorization/roleAssignmentsDocumentDB.bicep' = {
+module repositoryFrontendApplicationAuthorization 'Authorization/roleAssignmentsDocumentDB.bicep' = {
   name: 'repositoryFrontendApplicationAuthorization'
   params: {
     accountName: databaseAccount.outputs.accountName

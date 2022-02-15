@@ -23,5 +23,4 @@ resource symbolicname 'Microsoft.Authorization/roleAssignments@2020-04-01-previe
     roleDefinitionId: '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/${roleDefinitionId}'
     principalType: 'ServicePrincipal'
   }
-
 }
