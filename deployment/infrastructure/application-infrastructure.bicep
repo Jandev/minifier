@@ -368,7 +368,7 @@ module invalidateSubscription 'ServiceBus/subscription.bicep' = {
   }
 }
 
-module serviceBusBackendSenderAuthorization 'authorization/roleAssignmentsServiceBus.bicep' = {
+module serviceBusBackendSenderAuthorization 'Authorization/roleAssignmentsServiceBus.bicep' = {
   name: 'serviceBusBackendSenderAuthorization'
   params: {
     principalId: functionAppBackend.outputs.servicePrincipal
@@ -376,7 +376,7 @@ module serviceBusBackendSenderAuthorization 'authorization/roleAssignmentsServic
     serviceBusNamespaceName: serviceBusNamespace.outputs.name
   }
 }
-module serviceBusBackendReaderAuthorization 'authorization/roleAssignmentsServiceBus.bicep' = {
+module serviceBusBackendReaderAuthorization 'Authorization/roleAssignmentsServiceBus.bicep' = {
   name: 'serviceBusBackendReaderAuthorization'
   params: {
     principalId: functionAppBackend.outputs.servicePrincipal
@@ -385,7 +385,7 @@ module serviceBusBackendReaderAuthorization 'authorization/roleAssignmentsServic
   }
 }
 
-module serviceBusFrontendAuthorization 'authorization/roleAssignmentsServiceBus.bicep' = {
+module serviceBusFrontendAuthorization 'Authorization/roleAssignmentsServiceBus.bicep' = {
   name: 'serviceBusFrontendAuthorization'
   params: {
     principalId: functionAppBackend.outputs.servicePrincipal
