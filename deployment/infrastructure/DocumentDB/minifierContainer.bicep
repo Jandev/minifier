@@ -47,3 +47,5 @@ resource urlContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/contai
     }
   }
 }
+
+output name string = containerName

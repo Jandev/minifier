@@ -22,12 +22,18 @@ var storageAccountBlobDataReaderAuthorizationRoleId = '2a2b9908-6ea1-4ae2-8e65-a
 var storageAccountBlobDataOwnerAuthorizationRoleId = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b' // Storage Blob Data Owner
 var storageAccountQueueDataContributorAuthorizationRoleId = '974c5e8b-45b9-4653-ba55-5f855dd0fb88' // Storage Queue Data Contributor
 var storageAccountContributorRoleId = '17d1049b-9a84-46fb-8f53-869881c3d3ab'	// Storage Account Contributor
+var serviceBusDataReceiver = '4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0' // Azure Service Bus Data Receiver
+var serviceBusDataSender = '69a216fc-b8fb-44d8-bc22-1f3c2cd27a39' //	Azure Service Bus Data Sender
+var cosmosDbDataReader = '00000000-0000-0000-0000-000000000001' // Cosmos DB Data Reader
+var cosmosDbDataContributor = '00000000-0000-0000-0000-000000000002' // Cosmos DB Data Contributor
+
 // Deployment Storage Account details
 var deploymentStorageAccountName = '${systemName}deploy${environmentName}${azureRegion}sa'
 resource deploymentStorageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' existing = {
   name: deploymentStorageAccountName
 }
 
+// Application Insights
 module applicationInsights 'Insights/components.bicep' = {
   name: 'applicationInsightsDeploy'
   params: {
@@ -37,6 +43,7 @@ module applicationInsights 'Insights/components.bicep' = {
   }
 }
 
+// Frontend system
 module webApiStorageAccount 'Storage/storageAccounts.bicep' = {
   name: 'storageAccountAppDeploy'
   params: {
@@ -137,18 +144,10 @@ resource config 'Microsoft.Web/sites/config@2020-12-01' = {
         name: 'RUN_FROM_PACKAGE'
         value: frontendPackageReferenceLocation
       }
-      {
-        name: 'AzureWebJobsStorage__blobServiceUri'
-        value: 'https://${webApiStorageAccount.outputs.storageAccountName}.blob.${environment().suffixes.storage}'
-      }
-      {
-        name: 'AzureWebJobsStorage__queueServiceUri'
-        value: 'https://${webApiStorageAccount.outputs.storageAccountName}.queue.${environment().suffixes.storage}'
-      }
       // This one shouldn't be necessary, but can remove it later on.
       {
         name: 'AzureWebJobsStorage'
-        value: 'https://${webApiStorageAccount.outputs.storageAccountName}.blob.${environment().suffixes.storage}'
+        value: webApiStorageAccount.outputs.connectionString
       }
       // This one shouldn't be here, but: https://twitter.com/Jan_de_V/status/1491136532165832704
       {
@@ -159,6 +158,7 @@ resource config 'Microsoft.Web/sites/config@2020-12-01' = {
   }
 }
 
+// Backend system
 module webApiStorageAccountBackend 'Storage/storageAccounts.bicep' = {
   name: 'storageAccountAppBackend'
   params: {
@@ -259,18 +259,10 @@ resource configBackend 'Microsoft.Web/sites/config@2020-12-01' = {
         name: 'RUN_FROM_PACKAGE'
         value: backendPackageReferenceLocation
       }
-      {
-        name: 'AzureWebJobsStorage__blobServiceUri'
-        value: 'https://${webApiStorageAccountBackend.outputs.storageAccountName}.blob.${environment().suffixes.storage}'
-      }
-      {
-        name: 'AzureWebJobsStorage__queueServiceUri'
-        value: 'https://${webApiStorageAccountBackend.outputs.storageAccountName}.queue.${environment().suffixes.storage}'
-      }
       // This one shouldn't be necessary, but can remove it later on.
       {
         name: 'AzureWebJobsStorage'
-        value: 'https://${webApiStorageAccountBackend.outputs.storageAccountName}.blob.${environment().suffixes.storage}'
+        value: webApiStorageAccountBackend.outputs.connectionString
       }
       // This one shouldn't be here, but: https://twitter.com/Jan_de_V/status/1491136532165832704
       {
@@ -281,6 +273,7 @@ resource configBackend 'Microsoft.Web/sites/config@2020-12-01' = {
   }
 }
 
+// The repository
 module databaseAccount 'DocumentDB/databaseAccount.bicep' = {
   name: 'databaseAccount'
   params: {
@@ -306,6 +299,40 @@ module slugContainer 'DocumentDB/minifierContainer.bicep' = {
   }
 }
 
+module repositoryBackendApplicationContributorAuthorization 'authorization/roleAssignmentsDocumentDB.bicep' = {
+  name: 'repositoryBackendApplicationContributorAuthorization'
+  params: {
+    accountName: databaseAccount.outputs.accountName
+    containerName: slugContainer.outputs.name
+    databaseName: sqlDatabase.outputs.databaseName
+    principalId: functionAppBackend.outputs.servicePrincipal
+    roleDefinitionId: cosmosDbDataContributor
+  }
+}
+
+module repositoryBackendApplicationReaderAuthorization 'authorization/roleAssignmentsDocumentDB.bicep' = {
+  name: 'repositoryBackendApplicationReaderAuthorization'
+  params: {
+    accountName: databaseAccount.outputs.accountName
+    containerName: slugContainer.outputs.name
+    databaseName: sqlDatabase.outputs.databaseName
+    principalId: functionAppBackend.outputs.servicePrincipal
+    roleDefinitionId: cosmosDbDataReader
+  }
+}
+
+module repositoryFrontendApplicationAuthorization 'authorization/roleAssignmentsDocumentDB.bicep' = {
+  name: 'repositoryFrontendApplicationAuthorization'
+  params: {
+    accountName: databaseAccount.outputs.accountName
+    containerName: slugContainer.outputs.name
+    databaseName: sqlDatabase.outputs.databaseName
+    principalId: functionApp.outputs.servicePrincipal
+    roleDefinitionId: cosmosDbDataReader
+  }
+}
+
+// The messaging
 module serviceBusNamespace 'ServiceBus/namespace.bicep' = {
   name: 'serviceBusNamespace'
   params: {
@@ -338,5 +365,31 @@ module invalidateSubscription 'ServiceBus/subscription.bicep' = {
     name: 'invalidate${azureRegion}'
     namespaceName: serviceBusNamespace.outputs.name
     topicName: topic.outputs.name
+  }
+}
+
+module serviceBusBackendSenderAuthorization 'authorization/roleAssignmentsServiceBus.bicep' = {
+  name: 'serviceBusBackendSenderAuthorization'
+  params: {
+    principalId: functionAppBackend.outputs.servicePrincipal
+    roleDefinitionId: serviceBusDataSender
+    serviceBusNamespaceName: serviceBusNamespace.outputs.name
+  }
+}
+module serviceBusBackendReaderAuthorization 'authorization/roleAssignmentsServiceBus.bicep' = {
+  name: 'serviceBusBackendReaderAuthorization'
+  params: {
+    principalId: functionAppBackend.outputs.servicePrincipal
+    roleDefinitionId: serviceBusDataReceiver
+    serviceBusNamespaceName: serviceBusNamespace.outputs.name
+  }
+}
+
+module serviceBusFrontendAuthorization 'authorization/roleAssignmentsServiceBus.bicep' = {
+  name: 'serviceBusFrontendAuthorization'
+  params: {
+    principalId: functionAppBackend.outputs.servicePrincipal
+    roleDefinitionId: serviceBusDataReceiver
+    serviceBusNamespaceName: serviceBusNamespace.outputs.name
   }
 }
