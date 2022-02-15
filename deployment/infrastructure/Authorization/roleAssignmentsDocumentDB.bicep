@@ -8,7 +8,7 @@ resource documentDbAccount 'Microsoft.DocumentDB/databaseAccounts@2021-10-15' ex
 }
 
 resource sqlRoleAssignment 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2021-10-15' = {
-  name: 'sqlRoleAssignment'
+  name: guid(roleDefinitionId, principalId, documentDbAccount.id)
   parent: documentDbAccount
   properties: {
     principalId: principalId
