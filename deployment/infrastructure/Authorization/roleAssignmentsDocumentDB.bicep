@@ -7,12 +7,12 @@ resource documentDbAccount 'Microsoft.DocumentDB/databaseAccounts@2021-10-15' ex
   name: accountName
 }
 
-resource symbolicname 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(subscription().id, principalId, roleDefinitionId)
-  scope: documentDbAccount
+resource sqlRoleAssignment 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2021-10-15' = {
+  name: 'sqlRoleAssignment'
+  parent: documentDbAccount
   properties: {
     principalId: principalId
-    roleDefinitionId: '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/${roleDefinitionId}'
-    principalType: 'ServicePrincipal'
+    roleDefinitionId: subscriptionResourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', roleDefinitionId)
+    scope: documentDbAccount.id
   }
 }
