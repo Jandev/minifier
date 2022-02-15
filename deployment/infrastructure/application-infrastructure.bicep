@@ -303,8 +303,6 @@ module repositoryBackendApplicationContributorAuthorization 'Authorization/roleA
   name: 'repositoryBackendApplicationContributorAuthorization'
   params: {
     accountName: databaseAccount.outputs.accountName
-    containerName: slugContainer.outputs.name
-    databaseName: sqlDatabase.outputs.databaseName
     principalId: functionAppBackend.outputs.servicePrincipal
     roleDefinitionId: cosmosDbDataContributor
   }
@@ -314,8 +312,6 @@ module repositoryBackendApplicationReaderAuthorization 'Authorization/roleAssign
   name: 'repositoryBackendApplicationReaderAuthorization'
   params: {
     accountName: databaseAccount.outputs.accountName
-    containerName: slugContainer.outputs.name
-    databaseName: sqlDatabase.outputs.databaseName
     principalId: functionAppBackend.outputs.servicePrincipal
     roleDefinitionId: cosmosDbDataReader
   }
@@ -325,8 +321,6 @@ module repositoryFrontendApplicationAuthorization 'Authorization/roleAssignments
   name: 'repositoryFrontendApplicationAuthorization'
   params: {
     accountName: databaseAccount.outputs.accountName
-    containerName: slugContainer.outputs.name
-    databaseName: sqlDatabase.outputs.databaseName
     principalId: functionApp.outputs.servicePrincipal
     roleDefinitionId: cosmosDbDataReader
   }
