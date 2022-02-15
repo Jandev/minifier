@@ -8,7 +8,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' existing 
 }
 
 resource symbolicname 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid('${principalId}${roleDefinitionId}')
+  name: guid(subscription().id, principalId, roleDefinitionId)
   scope: storageAccount
   properties: {
     principalId: principalId
