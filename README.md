@@ -7,11 +7,48 @@ A URL minifier which works with Azure Functions, and a couple of other Azure ser
 
 # Application
 
-## Supported actions
+## Usage
 
-- **Get** : Getting the corresponding url. We either get a `NotFound` code (`404`) or get redirected
-- **Create** : Post data to the corresponding url. The response is either `BadRequest` (`400`) or `Created` (`201`)
-- **Delete** : Delete data on the corresponding url. The response is either `BadRequest` (`400`), `Ok` (`200`) if the deletion is done, or `ExpectationFailed` (`417`) if anything forbid the deletion to be performed.
+### Supported actions
+
+| Action | HTTP VERB | Description                                                                                                                                                                                                                         |
+| ------ | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Get    | GET       | Retrieves the URL matching the slug and redirects, or returns a `NotFound` code (`404`).                                                                                                                                            |
+| Create | POST      | Creates a new slug in the repository, along with the redirect URL. The response is either `BadRequest` (`400`) or `Created` (`201`)                                                                                                 |
+| Delete | DELETE    | Removes the URL matching the specified slug from the repository. The response is either `BadRequest` (`400`), `Ok` (`200`) if the deletion is done, or `ExpectationFailed` (`417`) if anything forbid the deletion to be performed. |
+
+### GET
+
+Invoke the Azure Function like this.
+
+```
+GET http://{yourInstance}/someSlug
+```
+
+Replace `{yourInstance}` with your actual host.
+
+### POST
+
+```
+POST http://localhost:7071/api/Create
+{
+    "slug": "blog",
+    "url": "https://jan-v.nl"
+}
+```
+
+This will result in the slug being stored in the repository. Make sure you have some authorization in place, like using a Function Key.
+
+### DELETE
+
+```
+DELETE http://localhost:7071/api/Delete
+{
+    "slug": "blog",
+}
+```
+
+This will remove the specified slug from the repository. Make sure you have some authorization in place, like using a Function Key.
 
 ## Configuration
 
@@ -19,25 +56,34 @@ There are several configuration values the solution depends upon.
 
 ### Local development - local.settings.json
 
-You should add a file called `local.settings.json`, if you want to run the solution yourself. The contents of this file will have to look like the following example.
+You should add a file called `local.settings.json`, if you want to run the solution yourself.  
+The contents of the `Minifier.Frontend` project should look similar to the following:
 
 ```json
 {
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
-    "CosmosConnectionString": "AccountEndpoint=https://MyTableApiDatabase.documents.azure.com;AccountKey=superSecertKey",
-    "CreateNewUrlsServiceBusConnection": "Endpoint=sb://MyServiceBusNamespace.servicebus.windows.net/;SharedAccessKeyName=MyAccessKeyNameWithSendPermission;SharedAccessKey=TheActualAccessKey",
-    "GetNewUrlsServiceBusConnection": "Endpoint=sb://minifier.servicebus.windows.net/;SharedAccessKeyName=MyAccessKeyNameWithManagePermission;SharedAccessKey=TheActualAccessKeyForManagePermission"
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet"
+  }
+}
+```
+
+The contents of the `Minifier.Frontend` project should look similar to the following:
+
+```json
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet"
   }
 }
 ```
 
 ### In Azure
 
-There aren't any deployment scripts at the moment, so you have to set everything up manually, including specifying all of the listed settings in the `Configuration` area of your Function App.
+This is all being handled by the Bicep template in this repository, so no need to worry about it.
 
 # Deployment
 
