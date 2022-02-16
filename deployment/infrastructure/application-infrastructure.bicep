@@ -144,10 +144,13 @@ resource config 'Microsoft.Web/sites/config@2020-12-01' = {
         name: 'WEBSITE_RUN_FROM_PACKAGE'
         value: frontendPackageReferenceLocation
       }
-      // This one shouldn't be necessary, but can remove it later on.
       {
-        name: 'AzureWebJobsStorage'
-        value: webApiStorageAccount.outputs.connectionString
+        name: 'AzureWebJobsStorage__blobServiceUri'
+        value: 'https://${webApiStorageAccount.outputs.storageAccountName}.blob.${environment().suffixes.storage}'
+      }
+      {
+        name: 'AzureWebJobsStorage__queueServiceUri'
+        value: 'https://${webApiStorageAccount.outputs.storageAccountName}.queue.${environment().suffixes.storage}'
       }
       // This one shouldn't be here, but: https://twitter.com/Jan_de_V/status/1491136532165832704
       {
@@ -259,10 +262,13 @@ resource configBackend 'Microsoft.Web/sites/config@2020-12-01' = {
         name: 'WEBSITE_RUN_FROM_PACKAGE'
         value: backendPackageReferenceLocation
       }
-      // This one shouldn't be necessary, but can remove it later on.
       {
-        name: 'AzureWebJobsStorage'
-        value: webApiStorageAccountBackend.outputs.connectionString
+        name: 'AzureWebJobsStorage__blobServiceUri'
+        value: 'https://${webApiStorageAccountBackend.outputs.storageAccountName}.blob.${environment().suffixes.storage}'
+      }
+      {
+        name: 'AzureWebJobsStorage__queueServiceUri'
+        value: 'https://${webApiStorageAccountBackend.outputs.storageAccountName}.queue.${environment().suffixes.storage}'
       }
       // This one shouldn't be here, but: https://twitter.com/Jan_de_V/status/1491136532165832704
       {
