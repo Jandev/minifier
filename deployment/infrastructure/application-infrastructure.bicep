@@ -141,7 +141,7 @@ resource config 'Microsoft.Web/sites/config@2020-12-01' = {
         value: 'azure-function'
       }
       {
-        name: 'RUN_FROM_PACKAGE'
+        name: 'WEBSITE_RUN_FROM_PACKAGE'
         value: frontendPackageReferenceLocation
       }
       // This one shouldn't be necessary, but can remove it later on.
@@ -256,7 +256,7 @@ resource configBackend 'Microsoft.Web/sites/config@2020-12-01' = {
         value: 'azure-function'
       }
       {
-        name: 'RUN_FROM_PACKAGE'
+        name: 'WEBSITE_RUN_FROM_PACKAGE'
         value: backendPackageReferenceLocation
       }
       // This one shouldn't be necessary, but can remove it later on.
