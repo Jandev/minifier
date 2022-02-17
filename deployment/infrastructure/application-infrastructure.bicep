@@ -27,6 +27,8 @@ var serviceBusDataSender = '69a216fc-b8fb-44d8-bc22-1f3c2cd27a39' //	Azure Servi
 var cosmosDbDataReader = '00000000-0000-0000-0000-000000000001' // Cosmos DB Data Reader
 var cosmosDbDataContributor = '00000000-0000-0000-0000-000000000002' // Cosmos DB Data Contributor
 
+var serviceBusIncomingMinifiedUrlsTopicName = 'incoming-minified-urls'
+
 // Deployment Storage Account details
 var deploymentStorageAccountName = '${systemName}deploy${environmentName}${azureRegion}sa'
 resource deploymentStorageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' existing = {
@@ -275,6 +277,14 @@ resource configBackend 'Microsoft.Web/sites/config@2020-12-01' = {
         name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
         value: webApiStorageAccountBackend.outputs.connectionString
       }
+      {
+        name: 'MinifierIncomingMessages__fullyQualifiedNamespace'
+        value: '${serviceBusNamespace.outputs.name}.servicebus.windows.net'
+      }
+      {
+        name: 'IncomingUrlsTopicName'
+        value: serviceBusIncomingMinifiedUrlsTopicName
+      }
     ]
   }
 }
@@ -352,7 +362,7 @@ module serviceBusNamespace 'ServiceBus/namespace.bicep' = {
 module topic 'ServiceBus/topic.bicep' = {
   name: 'serviceBusTopic'
   params: {
-    name: 'incoming-minified-urls'
+    name: serviceBusIncomingMinifiedUrlsTopicName
     namespaceName: serviceBusNamespace.outputs.name
   }
 }

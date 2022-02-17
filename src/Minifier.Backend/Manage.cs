@@ -1,3 +1,8 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Text.Json;
@@ -5,11 +10,6 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
 
 namespace Minifier.Backend
 {
@@ -26,6 +26,8 @@ namespace Minifier.Backend
         public async Task<IActionResult> Create(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] 
             HttpRequest req,
+            [ServiceBus("%IncomingUrlsTopicName%", Connection = "MinifierIncomingMessages")]
+            IAsyncCollector<MinifiedUrl> createMinifiedUrlCommands,
             CancellationToken hostCancellationToken)
         {
             using var cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(hostCancellationToken, req.HttpContext.RequestAborted);
@@ -45,7 +47,9 @@ namespace Minifier.Backend
                 return new BadRequestErrorMessageResult(message);
             }
             data.Created = DateTime.UtcNow;
-            
+
+            await createMinifiedUrlCommands.AddAsync(data, cancellationSource.Token);
+
             return new OkObjectResult(data.Slug);
         }
 

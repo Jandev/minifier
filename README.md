@@ -56,7 +56,10 @@ There are several configuration values the solution depends upon.
 
 ### Local development - local.settings.json
 
-You should add a file called `local.settings.json`, if you want to run the solution yourself.  
+You should add a file called `local.settings.json`, if you want to run the solution yourself.
+
+While the deployment templates make sure the appropriate permissions are set for the managed identities, you need to do this for yourself when running on your own machine. Within Visual Studio you can set the used identity in `Tools -> Options -> Azure Service Authentication -> Account Selection`. Most other tools use the identity configured via the Azure CLI.
+
 The contents of the `Minifier.Frontend` project should look similar to the following:
 
 ```json
@@ -64,7 +67,9 @@ The contents of the `Minifier.Frontend` project should look similar to the follo
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet"
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "MinifierIncomingMessages__fullyQualifiedNamespace": "{yourServiceBusNamespaceName}.servicebus.windows.net",
+    "IncomingUrlsTopicName": "incoming-minified-urls" // This one is defined in the Bicep template, but you can change it if you want.
   }
 }
 ```
