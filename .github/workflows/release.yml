@@ -126,7 +126,6 @@ jobs:
           inlineScript: |
             az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD }} -n '${{ env.GITHUB_SHA }}/backend.zip'
             az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD }} -n '${{ env.GITHUB_SHA }}/frontend.zip'
-            - name: Deploy packages
 
       - name: Deploy packages to test
         if: github.ref == 'refs/heads/develop'
