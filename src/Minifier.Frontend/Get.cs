@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using System.Text.Json.Serialization;
 
 namespace Minifier.Frontend
 {
@@ -17,13 +18,27 @@ namespace Minifier.Frontend
 
         [FunctionName(nameof(Get))]
         public IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{slug}")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{Slug}")]
             HttpRequest req,
-            string slug)
+            [CosmosDB(
+                "%UrlMinifierRepository:DatabaseName%",
+                "%UrlMinifierRepository:CollectionName%",
+                Connection = "UrlMinifierRepository",
+                Id = "{Slug}",
+                PartitionKey = "{Slug}")]
+            MinifiedUrlEntity existingMinifiedUrlEntity)
         {
-            logger.LogInformation("Entering the function! Slug is {slug}", slug);
-
-            return new OkObjectResult(slug);
+            return new RedirectResult(existingMinifiedUrlEntity.url);
+        }
+        
+        /// <summary>
+        /// Lowercasing this property, because Cosmos DB is case sensitive about properties
+        /// and using the output binding, like in this Azure Function, doesn't work appear
+        /// to work with <see cref="JsonPropertyNameAttribute"/> definitions.
+        /// </summary>
+        public class MinifiedUrlEntity
+        {
+            public string url { get; set; }
         }
     }
 }

@@ -28,6 +28,7 @@ var cosmosDbDataReader = '00000000-0000-0000-0000-000000000001' // Cosmos DB Dat
 var cosmosDbDataContributor = '00000000-0000-0000-0000-000000000002' // Cosmos DB Data Contributor
 
 var serviceBusIncomingMinifiedUrlsTopicName = 'incoming-minified-urls'
+var serviceBusProcessSubscriptionName = 'process'
 
 // Deployment Storage Account details
 var deploymentStorageAccountName = '${systemName}deploy${environmentName}${azureRegion}sa'
@@ -159,6 +160,18 @@ resource config 'Microsoft.Web/sites/config@2020-12-01' = {
         name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
         value: webApiStorageAccount.outputs.connectionString
       }
+      {
+        name: 'UrlMinifierRepository__accountEndpoint'
+        value: 'https://${databaseAccount.outputs.accountName}.documents.azure.com:443/'
+      }
+      {
+        name: 'UrlMinifierRepository__DatabaseName'
+        value: sqlDatabase.outputs.databaseName
+      }
+      {
+        name: 'UrlMinifierRepository__CollectionName'
+        value: slugContainer.outputs.name
+      }
     ]
   }
 }
@@ -285,6 +298,22 @@ resource configBackend 'Microsoft.Web/sites/config@2020-12-01' = {
         name: 'IncomingUrlsTopicName'
         value: serviceBusIncomingMinifiedUrlsTopicName
       }
+      {
+        name: 'IncomingUrlsProcessingSubscription'
+        value: serviceBusProcessSubscriptionName
+      }
+      {
+        name: 'UrlMinifierRepository__accountEndpoint'
+        value: 'https://${databaseAccount.outputs.accountName}.documents.azure.com:443/'
+      }
+      {
+        name: 'UrlMinifierRepository__DatabaseName'
+        value: sqlDatabase.outputs.databaseName
+      }
+      {
+        name: 'UrlMinifierRepository__CollectionName'
+        value: slugContainer.outputs.name
+      }
     ]
   }
 }
@@ -370,7 +399,7 @@ module topic 'ServiceBus/topic.bicep' = {
 module processSubscription 'ServiceBus/subscription.bicep' = {
   name: 'processSubscription'
   params: {
-    name: 'process'
+    name: serviceBusProcessSubscriptionName
     namespaceName: serviceBusNamespace.outputs.name
     topicName: topic.outputs.name
   }
