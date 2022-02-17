@@ -60,6 +60,20 @@ You should add a file called `local.settings.json`, if you want to run the solut
 
 While the deployment templates make sure the appropriate permissions are set for the managed identities, you need to do this for yourself when running on your own machine. Within Visual Studio you can set the used identity in `Tools -> Options -> Azure Service Authentication -> Account Selection`. Most other tools use the identity configured via the Azure CLI.
 
+The Azure Functions are using identity-based bindings, therefore you need to grant yourself the appropriate roles to use these. You can use the following script to grant yourself the appropriate roles for Cosmos DB.
+
+```azcli
+$resourceGroupName='<myResourceGroup>'
+$accountName='<myCosmosAccount>'
+# Cosmos DB Built-in Data Reader: 00000000-0000-0000-0000-000000000001
+# Cosmos DB Built-in Data Contributor: 00000000-0000-0000-0000-000000000002
+$readOnlyRoleDefinitionId = '<roleDefinitionId>'
+$principalId = '<aadPrincipalIdOfYourManagedIdentity>'
+az cosmosdb sql role assignment create --account-name $accountName --resource-group $resourceGroupName --scope "/" --principal-id $principalId --role-definition-id $readOnlyRoleDefinitionId
+```
+
+The `principalId` is the Object Id of your Managed Identity OR from your own Azure Active Directory account.
+
 The contents of the `Minifier.Frontend` project should look similar to the following:
 
 ```json
