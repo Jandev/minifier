@@ -27,6 +27,9 @@ var serviceBusDataSender = '69a216fc-b8fb-44d8-bc22-1f3c2cd27a39' //	Azure Servi
 var cosmosDbDataReader = '00000000-0000-0000-0000-000000000001' // Cosmos DB Data Reader
 var cosmosDbDataContributor = '00000000-0000-0000-0000-000000000002' // Cosmos DB Data Contributor
 
+var serviceBusIncomingMinifiedUrlsTopicName = 'incoming-minified-urls'
+var serviceBusProcessSubscriptionName = 'process'
+
 // Deployment Storage Account details
 var deploymentStorageAccountName = '${systemName}deploy${environmentName}${azureRegion}sa'
 resource deploymentStorageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' existing = {
@@ -157,6 +160,18 @@ resource config 'Microsoft.Web/sites/config@2020-12-01' = {
         name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
         value: webApiStorageAccount.outputs.connectionString
       }
+      {
+        name: 'UrlMinifierRepository__accountEndpoint'
+        value: 'https://${databaseAccount.outputs.accountName}.documents.azure.com:443/'
+      }
+      {
+        name: 'UrlMinifierRepository__DatabaseName'
+        value: sqlDatabase.outputs.databaseName
+      }
+      {
+        name: 'UrlMinifierRepository__CollectionName'
+        value: slugContainer.outputs.name
+      }
     ]
   }
 }
@@ -275,6 +290,30 @@ resource configBackend 'Microsoft.Web/sites/config@2020-12-01' = {
         name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
         value: webApiStorageAccountBackend.outputs.connectionString
       }
+      {
+        name: 'MinifierIncomingMessages__fullyQualifiedNamespace'
+        value: '${serviceBusNamespace.outputs.name}.servicebus.windows.net'
+      }
+      {
+        name: 'IncomingUrlsTopicName'
+        value: serviceBusIncomingMinifiedUrlsTopicName
+      }
+      {
+        name: 'IncomingUrlsProcessingSubscription'
+        value: serviceBusProcessSubscriptionName
+      }
+      {
+        name: 'UrlMinifierRepository__accountEndpoint'
+        value: 'https://${databaseAccount.outputs.accountName}.documents.azure.com:443/'
+      }
+      {
+        name: 'UrlMinifierRepository__DatabaseName'
+        value: sqlDatabase.outputs.databaseName
+      }
+      {
+        name: 'UrlMinifierRepository__CollectionName'
+        value: slugContainer.outputs.name
+      }
     ]
   }
 }
@@ -352,7 +391,7 @@ module serviceBusNamespace 'ServiceBus/namespace.bicep' = {
 module topic 'ServiceBus/topic.bicep' = {
   name: 'serviceBusTopic'
   params: {
-    name: 'incoming-minified-urls'
+    name: serviceBusIncomingMinifiedUrlsTopicName
     namespaceName: serviceBusNamespace.outputs.name
   }
 }
@@ -360,7 +399,7 @@ module topic 'ServiceBus/topic.bicep' = {
 module processSubscription 'ServiceBus/subscription.bicep' = {
   name: 'processSubscription'
   params: {
-    name: 'process'
+    name: serviceBusProcessSubscriptionName
     namespaceName: serviceBusNamespace.outputs.name
     topicName: topic.outputs.name
   }

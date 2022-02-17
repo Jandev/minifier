@@ -30,7 +30,7 @@ Replace `{yourInstance}` with your actual host.
 ### POST
 
 ```
-POST http://localhost:7071/api/Create
+POST http://localhost:7071/api/Create?code=yourFunctionKey
 {
     "slug": "blog",
     "url": "https://jan-v.nl"
@@ -41,8 +41,10 @@ This will result in the slug being stored in the repository. Make sure you have 
 
 ### DELETE
 
+_Not implemented, yet_
+
 ```
-DELETE http://localhost:7071/api/Delete
+DELETE http://localhost:7071/api/Delete?code=yourFunctionKey
 {
     "slug": "blog",
 }
@@ -56,7 +58,24 @@ There are several configuration values the solution depends upon.
 
 ### Local development - local.settings.json
 
-You should add a file called `local.settings.json`, if you want to run the solution yourself.  
+You should add a file called `local.settings.json`, if you want to run the solution yourself.
+
+While the deployment templates make sure the appropriate permissions are set for the managed identities, you need to do this for yourself when running on your own machine. Within Visual Studio you can set the used identity in `Tools -> Options -> Azure Service Authentication -> Account Selection`. Most other tools use the identity configured via the Azure CLI.
+
+The Azure Functions are using identity-based bindings, therefore you need to grant yourself the appropriate roles to use these. You can use the following script to grant yourself the appropriate roles for Cosmos DB.
+
+```azcli
+$resourceGroupName='<myResourceGroup>'
+$accountName='<myCosmosAccount>'
+# Cosmos DB Built-in Data Reader: 00000000-0000-0000-0000-000000000001
+# Cosmos DB Built-in Data Contributor: 00000000-0000-0000-0000-000000000002
+$readOnlyRoleDefinitionId = '<roleDefinitionId>'
+$principalId = '<aadPrincipalIdOfYourManagedIdentity>'
+az cosmosdb sql role assignment create --account-name $accountName --resource-group $resourceGroupName --scope "/" --principal-id $principalId --role-definition-id $readOnlyRoleDefinitionId
+```
+
+The `principalId` is the Object Id of your Managed Identity OR from your own Azure Active Directory account.
+
 The contents of the `Minifier.Frontend` project should look similar to the following:
 
 ```json
@@ -64,7 +83,13 @@ The contents of the `Minifier.Frontend` project should look similar to the follo
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet"
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "MinifierIncomingMessages__fullyQualifiedNamespace": "{yourServiceBusNamespaceName}.servicebus.windows.net",
+    "IncomingUrlsTopicName": "incoming-minified-urls", // This one is defined in the Bicep template, but you can change it if you want.
+    "IncomingUrlsProcessingSubscription": "process", // This one is defined in the Bicep template, but you can change it if you want.
+    "UrlMinifierRepository__accountEndpoint": "https://{yourCosmosDbAccountName}.documents.azure.com:443/",
+    "UrlMinifierRepository__DatabaseName": "minifier", // This one is defined in the Bicep template, but you can change it if you want.
+    "UrlMinifierRepository__CollectionName": "urls" // This one is defined in the Bicep template, but you can change it if you want.
   }
 }
 ```
@@ -76,7 +101,10 @@ The contents of the `Minifier.Frontend` project should look similar to the follo
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet"
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "UrlMinifierRepository__accountEndpoint": "https://{yourCosmosDbAccountName}.documents.azure.com:443/",
+    "UrlMinifierRepository__DatabaseName": "minifier", // This one is defined in the Bicep template, but you can change it if you want.
+    "UrlMinifierRepository__CollectionName": "urls" // This one is defined in the Bicep template, but you can change it if you want.
   }
 }
 ```
