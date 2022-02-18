@@ -21,6 +21,10 @@ on:
   schedule:
     - cron: "42 10 * * 6"
 
+env:
+  CONFIGURATION: Release
+  WORKING_DIRECTORY: src
+
 jobs:
   analyze:
     name: Analyze
@@ -60,9 +64,8 @@ jobs:
       #    and modify them (or add more) to build your code if your project
       #    uses a compiled language
 
-      #- run: |
-      #   make bootstrap
-      #   make release
+      - run: |
+          dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }}
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v1
