@@ -40,6 +40,7 @@ module applicationWestEurope 'application-infrastructure.bicep' = {
     systemName: systemName
     frontendPackageReferenceLocation: frontendPackageReferenceLocation
     backendPackageReferenceLocation: backendPackageReferenceLocation
+    fullDomainName: fullDomainName
   }
   scope: rgWestEurope
 }
