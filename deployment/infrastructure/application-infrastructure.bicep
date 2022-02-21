@@ -442,5 +442,5 @@ module serviceBusFrontendAuthorization 'Authorization/roleAssignmentsServiceBus.
   }
 }
 
-output frontendFunctionName string = functionAppBackend.outputs.webAppName
+output frontendFunctionName string = functionApp.outputs.webAppName
 output backendFunctionName string = functionAppBackend.outputs.webAppName
