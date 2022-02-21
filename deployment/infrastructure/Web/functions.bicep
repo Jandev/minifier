@@ -10,7 +10,7 @@ param azureRegion string
 
 param appServicePlanId string
 
-param fullDomainName string = ''
+param fullDomainName string = 'skip'
 
 var webAppName = toLower('${systemName}-${environmentName}-${azureRegion}-app')
 var subdomainPrefix = (environmentName == 'prod') ? '' : '${environmentName}.'
@@ -34,7 +34,7 @@ resource webApp 'Microsoft.Web/sites@2020-12-01' = {
   }
 }
 
-resource webAppNewCname 'Microsoft.Web/sites/hostNameBindings@2021-02-01' = if (!empty(fullDomainName)) {
+resource webAppNewCname 'Microsoft.Web/sites/hostNameBindings@2021-02-01' = if (fullDomainName != 'skip') {
   name: '${webAppName}/${subdomainPrefix}${fullDomainName}'
   dependsOn: [
     webApp
