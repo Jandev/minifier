@@ -4,6 +4,12 @@
   "parameters": {
     "environmentName": {
       "value": "prod"
+    },
+    "hostname": {
+      "value": "jdv.li"
+    },
+    "subdomain": {
+      "value": "m"
     }
   }
 }

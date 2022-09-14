@@ -3,13 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "environmentName": {
-      "value": "test"
-    },
-    "hostname": {
-      "value": "jdv.li"
-    },
-    "subdomain": {
-      "value": "m"
+      "value": "prod"
     }
   }
 }

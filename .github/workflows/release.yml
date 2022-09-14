@@ -95,11 +95,19 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_DEV }}
 
-      - name: Deploy Infrastructure
-        id: deployinfrastructure
+      - name: Deploy Test Infrastructure
+        if: github.ref == 'refs/heads/develop'
+        id: deploytestinfrastructure
         uses: Azure/cli@1.0.4
         with:
-          inlineScript: az deployment sub create --location WestEurope --template-file ./infrastructure/basic-infrastructure.bicep --parameters ./infrastructure/parameters.test.json
+          inlineScript: az deployment sub create --location WestEurope --template-file ./infrastructure/basic-infrastructure.bicep --parameters ./infrastructure/parameters.basic-infrastructure.test.json
+
+      - name: Deploy Prod Infrastructure
+        if: github.ref == 'refs/heads/main'
+        id: deployprodinfrastructure
+        uses: Azure/cli@1.0.4
+        with:
+          inlineScript: az deployment sub create --location WestEurope --template-file ./infrastructure/basic-infrastructure.bicep --parameters ./infrastructure/parameters-basic-infrastructure.json
 
   deploy-functions-package:
     needs: [compile-functions-app, basic-infrastructure]

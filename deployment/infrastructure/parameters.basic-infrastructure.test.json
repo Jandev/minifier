@@ -4,12 +4,6 @@
   "parameters": {
     "environmentName": {
       "value": "test"
-    },
-    "hostname": {
-      "value": "jdv.li"
-    },
-    "subdomain": {
-      "value": "m"
     }
   }
 }

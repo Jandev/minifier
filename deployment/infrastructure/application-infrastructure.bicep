@@ -9,6 +9,7 @@ param azureRegion string
 param systemName string
 param frontendPackageReferenceLocation string
 param backendPackageReferenceLocation string
+param fullDomainName string
 
 var webAppName = '${systemName}-${environmentName}-${azureRegion}-app'
 var backendSystemName = '${systemName}backend'
@@ -77,6 +78,7 @@ module functionApp 'Web/functions.bicep' = {
     systemName: systemName
     azureRegion: azureRegion
     appServicePlanId: appServicePlan.outputs.id
+    fullDomainName: fullDomainName
   }
 }
 
@@ -439,3 +441,6 @@ module serviceBusFrontendAuthorization 'Authorization/roleAssignmentsServiceBus.
     serviceBusNamespaceName: serviceBusNamespace.outputs.name
   }
 }
+
+output frontendFunctionName string = functionApp.outputs.webAppName
+output backendFunctionName string = functionAppBackend.outputs.webAppName
