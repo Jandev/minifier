@@ -109,6 +109,9 @@ module applicationWestUs 'application-infrastructure.bicep' = {
 
 module applicationAuthorizationWestUs 'application-services-authorization.bicep' = {
   scope: rgWestEurope
+  dependsOn: [
+    applicationAuthorizationWestEurope
+  ]
   name: '${systemName}${regionWestUsName}-authorization'
   params: {
     backendPrincipalId: applicationWestUs.outputs.backendPrincipalId
@@ -137,6 +140,10 @@ module applicationAustraliaSouthEast 'application-infrastructure.bicep' = {
 
 module applicationAuthorizationAustraliaSouthEast 'application-services-authorization.bicep' = {
   scope: rgWestEurope
+  dependsOn: [
+    applicationAuthorizationWestUs
+    applicationAuthorizationWestEurope
+  ]
   name: '${systemName}${regionAustraliaSouthEastName}-authorization'
   params: {
     backendPrincipalId: applicationAustraliaSouthEast.outputs.backendPrincipalId
