@@ -183,17 +183,19 @@ jobs:
         id: deployinfrastructureprod
         uses: Azure/cli@1.0.4
         with:
-          inlineScript: az deployment sub create --location WestEurope --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.json --parameters \
-          frontendPackageReferenceLocationWeu='${{ env.DEPLOYMENT_FRONTEND_URL_PROD_WEU }}' backendPackageReferenceLocationWeu='${{ env.DEPLOYMENT_BACKEND_URL_PROD_WEU }}' \
-          frontendPackageReferenceLocationWus='${{ env.DEPLOYMENT_FRONTEND_URL_PROD_WUS }}' backendPackageReferenceLocationWus='${{ env.DEPLOYMENT_BACKEND_URL_PROD_WUS }}' \
-          frontendPackageReferenceLocationAus='${{ env.DEPLOYMENT_FRONTEND_URL_PROD_AUS }}' backendPackageReferenceLocationAus='${{ env.DEPLOYMENT_BACKEND_URL_PROD_AUS }}'
+          inlineScript: |
+          az deployment sub create --location WestEurope --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.json --parameters \
+            frontendPackageReferenceLocationWeu='${{ env.DEPLOYMENT_FRONTEND_URL_PROD_WEU }}' backendPackageReferenceLocationWeu='${{ env.DEPLOYMENT_BACKEND_URL_PROD_WEU }}' \
+            frontendPackageReferenceLocationWus='${{ env.DEPLOYMENT_FRONTEND_URL_PROD_WUS }}' backendPackageReferenceLocationWus='${{ env.DEPLOYMENT_BACKEND_URL_PROD_WUS }}' \
+            frontendPackageReferenceLocationAus='${{ env.DEPLOYMENT_FRONTEND_URL_PROD_AUS }}' backendPackageReferenceLocationAus='${{ env.DEPLOYMENT_BACKEND_URL_PROD_AUS }}'
 
       - name: Deploy Infrastructure to test
         if: github.ref == 'refs/heads/develop'
         id: deployinfrastructuretest
         uses: Azure/cli@1.0.4
         with:
-          inlineScript: az deployment sub create --location WestEurope --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.test.json --parameters \
-          frontendPackageReferenceLocationWeu='${{ env.DEPLOYMENT_FRONTEND_URL_TEST_WEU }}' backendPackageReferenceLocationWeu='${{ env.DEPLOYMENT_BACKEND_URL_TEST_WEU }}' \
-          frontendPackageReferenceLocationWus='${{ env.DEPLOYMENT_FRONTEND_URL_TEST_WUS }}' backendPackageReferenceLocationWus='${{ env.DEPLOYMENT_BACKEND_URL_TEST_WUS }}' \
-          frontendPackageReferenceLocationAus='${{ env.DEPLOYMENT_FRONTEND_URL_TEST_AUS }}' backendPackageReferenceLocationAus='${{ env.DEPLOYMENT_BACKEND_URL_TEST_AUS }}'
+          inlineScript: |
+          az deployment sub create --location WestEurope --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.test.json --parameters \
+            frontendPackageReferenceLocationWeu='${{ env.DEPLOYMENT_FRONTEND_URL_TEST_WEU }}' backendPackageReferenceLocationWeu='${{ env.DEPLOYMENT_BACKEND_URL_TEST_WEU }}' \
+            frontendPackageReferenceLocationWus='${{ env.DEPLOYMENT_FRONTEND_URL_TEST_WUS }}' backendPackageReferenceLocationWus='${{ env.DEPLOYMENT_BACKEND_URL_TEST_WUS }}' \
+            frontendPackageReferenceLocationAus='${{ env.DEPLOYMENT_FRONTEND_URL_TEST_AUS }}' backendPackageReferenceLocationAus='${{ env.DEPLOYMENT_BACKEND_URL_TEST_AUS }}'
