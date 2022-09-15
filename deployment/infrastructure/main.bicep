@@ -107,17 +107,16 @@ module applicationWestUs 'application-infrastructure.bicep' = {
   scope: rgWestUs
 }
 
-module applicationAuthorizationAustraliaSouthEast 'application-services-authorization.bicep' = {
-  scope: rgAustraliaSouthEast
-  name: '${systemName}${regionAustraliaSouthEastName}-authorization'
+module applicationAuthorizationWestUs 'application-services-authorization.bicep' = {
+  scope: rgWestEurope
+  name: '${systemName}${regionWestUsName}-authorization'
   params: {
-    backendPrincipalId: applicationAustraliaSouthEast.outputs.backendPrincipalId
+    backendPrincipalId: applicationWestUs.outputs.backendPrincipalId
     cosmosDbAccountName: applicationServices.outputs.databaseAccountName
-    frontendPrincipalId: applicationAustraliaSouthEast.outputs.frontendPrincipalId
+    frontendPrincipalId: applicationWestUs.outputs.frontendPrincipalId
     serviceBusNamespaceName: applicationServices.outputs.serviceBusNamespaceName
   }
 }
-
 
 module applicationAustraliaSouthEast 'application-infrastructure.bicep' = {
   name: '${systemName}${regionAustraliaSouthEastName}-apps'
@@ -136,13 +135,13 @@ module applicationAustraliaSouthEast 'application-infrastructure.bicep' = {
   scope: rgAustraliaSouthEast
 }
 
-module applicationAuthorizationWestUs 'application-services-authorization.bicep' = {
-  scope: rgWestUs
-  name: '${systemName}${regionWestUsName}-authorization'
+module applicationAuthorizationAustraliaSouthEast 'application-services-authorization.bicep' = {
+  scope: rgWestEurope
+  name: '${systemName}${regionAustraliaSouthEastName}-authorization'
   params: {
-    backendPrincipalId: applicationWestUs.outputs.backendPrincipalId
+    backendPrincipalId: applicationAustraliaSouthEast.outputs.backendPrincipalId
     cosmosDbAccountName: applicationServices.outputs.databaseAccountName
-    frontendPrincipalId: applicationWestUs.outputs.frontendPrincipalId
+    frontendPrincipalId: applicationAustraliaSouthEast.outputs.frontendPrincipalId
     serviceBusNamespaceName: applicationServices.outputs.serviceBusNamespaceName
   }
 }

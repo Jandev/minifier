@@ -1,3 +1,4 @@
+// Before this template can succeed, the service principal deploying needs to have the `Owner` role on the resource group or resources to set authorization roles for other service principals.
 param serviceBusNamespaceName string
 param cosmosDbAccountName string
 
