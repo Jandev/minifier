@@ -16,11 +16,11 @@ targetScope = 'subscription'
 
 // Creating the resource groups for this service
 resource rgWestEurope 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: '${fullSystemPrefix}-${regionWestUsName}'
+  name: '${fullSystemPrefix}-${regionWestEuropeName}'
   location: 'westeurope'
 }
 resource rgWestUs 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: '${fullSystemPrefix}-${regionWestEuropeName}'
+  name: '${fullSystemPrefix}-${regionWestUsName}'
   location: 'westus'
 }
 resource rgAustraliaSouthEast 'Microsoft.Resources/resourceGroups@2021-04-01' = {
