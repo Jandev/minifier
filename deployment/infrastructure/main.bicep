@@ -45,11 +45,11 @@ resource rgWestEurope 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 
 resource rgWestUs 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: '${fullSystemPrefix}-${regionWestUsName}'
-  location: primaryLocation
+  location: 'westus'
 }
 resource rgAustraliaSouthEast 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: '${fullSystemPrefix}-${regionAustraliaSouthEastName}'
-  location: primaryLocation
+  location: 'australiasoutheast'
 }
 
 module applicationServices 'application-services.bicep' = {
