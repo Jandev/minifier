@@ -11,6 +11,11 @@ param frontendPackageReferenceLocation string
 param backendPackageReferenceLocation string
 param fullDomainName string
 
+param serviceBusNamespaceName string
+param databaseAccountName string
+param sqlDatabaseName string
+param slugContainerName string
+
 var webAppName = '${systemName}-${environmentName}-${azureRegion}-app'
 var backendSystemName = '${systemName}backend'
 var webAppNameBackend = '${backendSystemName}-${environmentName}-${azureRegion}-app'
@@ -23,19 +28,12 @@ var storageAccountBlobDataReaderAuthorizationRoleId = '2a2b9908-6ea1-4ae2-8e65-a
 var storageAccountBlobDataOwnerAuthorizationRoleId = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b' // Storage Blob Data Owner
 var storageAccountQueueDataContributorAuthorizationRoleId = '974c5e8b-45b9-4653-ba55-5f855dd0fb88' // Storage Queue Data Contributor
 var storageAccountContributorRoleId = '17d1049b-9a84-46fb-8f53-869881c3d3ab'	// Storage Account Contributor
-var serviceBusDataReceiver = '4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0' // Azure Service Bus Data Receiver
-var serviceBusDataSender = '69a216fc-b8fb-44d8-bc22-1f3c2cd27a39' //	Azure Service Bus Data Sender
-var cosmosDbDataReader = '00000000-0000-0000-0000-000000000001' // Cosmos DB Data Reader
-var cosmosDbDataContributor = '00000000-0000-0000-0000-000000000002' // Cosmos DB Data Contributor
 
 var serviceBusIncomingMinifiedUrlsTopicName = 'incoming-minified-urls'
 var serviceBusProcessSubscriptionName = 'process'
 
 // Deployment Storage Account details
 var deploymentStorageAccountName = '${systemName}deploy${environmentName}${azureRegion}sa'
-resource deploymentStorageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' existing = {
-  name: deploymentStorageAccountName
-}
 
 // Application Insights
 module applicationInsights 'Insights/components.bicep' = {
@@ -164,15 +162,15 @@ resource config 'Microsoft.Web/sites/config@2020-12-01' = {
       }
       {
         name: 'UrlMinifierRepository__accountEndpoint'
-        value: 'https://${databaseAccount.outputs.accountName}.documents.azure.com:443/'
+        value: 'https://${databaseAccountName}.documents.azure.com:443/'
       }
       {
         name: 'UrlMinifierRepository__DatabaseName'
-        value: sqlDatabase.outputs.databaseName
+        value: sqlDatabaseName
       }
       {
         name: 'UrlMinifierRepository__CollectionName'
-        value: slugContainer.outputs.name
+        value: slugContainerName
       }
     ]
   }
@@ -294,7 +292,7 @@ resource configBackend 'Microsoft.Web/sites/config@2020-12-01' = {
       }
       {
         name: 'MinifierIncomingMessages__fullyQualifiedNamespace'
-        value: '${serviceBusNamespace.outputs.name}.servicebus.windows.net'
+        value: '${serviceBusNamespaceName}.servicebus.windows.net'
       }
       {
         name: 'IncomingUrlsTopicName'
@@ -306,141 +304,21 @@ resource configBackend 'Microsoft.Web/sites/config@2020-12-01' = {
       }
       {
         name: 'UrlMinifierRepository__accountEndpoint'
-        value: 'https://${databaseAccount.outputs.accountName}.documents.azure.com:443/'
+        value: 'https://${databaseAccountName}.documents.azure.com:443/'
       }
       {
         name: 'UrlMinifierRepository__DatabaseName'
-        value: sqlDatabase.outputs.databaseName
+        value: sqlDatabaseName
       }
       {
         name: 'UrlMinifierRepository__CollectionName'
-        value: slugContainer.outputs.name
+        value: slugContainerName
       }
     ]
   }
 }
 
-// The repository
-module databaseAccount 'DocumentDB/databaseAccount.bicep' = {
-  name: 'databaseAccount'
-  params: {
-    azureRegion: azureRegion
-    environmentName: environmentName
-    systemName: systemName
-  }
-}
-
-module sqlDatabase 'DocumentDB/sqlDatabase.bicep' = {
-  name: 'sqlDatabase'
-  params: {
-    databaseAccountName: databaseAccount.outputs.accountName
-    databaseName: systemName
-  }
-}
-
-module slugContainer 'DocumentDB/minifierContainer.bicep' = {
-  name: 'slugContainer'
-  params: {
-    accountName: databaseAccount.outputs.accountName
-    databaseName: sqlDatabase.outputs.databaseName
-  }
-}
-
-module repositoryBackendApplicationContributorAuthorization 'DocumentDB/sqlRoleAssignments.bicep' = {
-  name: 'repositoryBackendApplicationContributorAuthorization'
-  params: {
-    accountName: databaseAccount.outputs.accountName
-    principalId: functionAppBackend.outputs.servicePrincipal
-    roleDefinitionId: cosmosDbDataContributor
-  }
-}
-
-module repositoryBackendApplicationReaderAuthorization 'DocumentDB/sqlRoleAssignments.bicep' = {
-  name: 'repositoryBackendApplicationReaderAuthorization'
-  dependsOn: [ 
-    repositoryBackendApplicationContributorAuthorization 
-  ]
-  params: {
-    accountName: databaseAccount.outputs.accountName
-    principalId: functionAppBackend.outputs.servicePrincipal
-    roleDefinitionId: cosmosDbDataReader
-  }
-}
-
-module repositoryFrontendApplicationAuthorization 'DocumentDB/sqlRoleAssignments.bicep' = {
-  name: 'repositoryFrontendApplicationAuthorization'
-  dependsOn: [ 
-    repositoryBackendApplicationContributorAuthorization 
-    repositoryBackendApplicationReaderAuthorization
-  ]
-  params: {
-    accountName: databaseAccount.outputs.accountName
-    principalId: functionApp.outputs.servicePrincipal
-    roleDefinitionId: cosmosDbDataReader
-  }
-}
-
-// The messaging
-module serviceBusNamespace 'ServiceBus/namespace.bicep' = {
-  name: 'serviceBusNamespace'
-  params: {
-    azureRegion: azureRegion
-    environmentName: environmentName
-    systemName: systemName
-  }
-}
-
-module topic 'ServiceBus/topic.bicep' = {
-  name: 'serviceBusTopic'
-  params: {
-    name: serviceBusIncomingMinifiedUrlsTopicName
-    namespaceName: serviceBusNamespace.outputs.name
-  }
-}
-
-module processSubscription 'ServiceBus/subscription.bicep' = {
-  name: 'processSubscription'
-  params: {
-    name: serviceBusProcessSubscriptionName
-    namespaceName: serviceBusNamespace.outputs.name
-    topicName: topic.outputs.name
-  }
-}
-
-module invalidateSubscription 'ServiceBus/subscription.bicep' = {
-  name: 'invalidateSubscription'
-  params: {
-    name: 'invalidate${azureRegion}'
-    namespaceName: serviceBusNamespace.outputs.name
-    topicName: topic.outputs.name
-  }
-}
-
-module serviceBusBackendSenderAuthorization 'Authorization/roleAssignmentsServiceBus.bicep' = {
-  name: 'serviceBusBackendSenderAuthorization'
-  params: {
-    principalId: functionAppBackend.outputs.servicePrincipal
-    roleDefinitionId: serviceBusDataSender
-    serviceBusNamespaceName: serviceBusNamespace.outputs.name
-  }
-}
-module serviceBusBackendReaderAuthorization 'Authorization/roleAssignmentsServiceBus.bicep' = {
-  name: 'serviceBusBackendReaderAuthorization'
-  params: {
-    principalId: functionAppBackend.outputs.servicePrincipal
-    roleDefinitionId: serviceBusDataReceiver
-    serviceBusNamespaceName: serviceBusNamespace.outputs.name
-  }
-}
-
-module serviceBusFrontendAuthorization 'Authorization/roleAssignmentsServiceBus.bicep' = {
-  name: 'serviceBusFrontendAuthorization'
-  params: {
-    principalId: functionAppBackend.outputs.servicePrincipal
-    roleDefinitionId: serviceBusDataReceiver
-    serviceBusNamespaceName: serviceBusNamespace.outputs.name
-  }
-}
-
 output frontendFunctionName string = functionApp.outputs.webAppName
 output backendFunctionName string = functionAppBackend.outputs.webAppName
+output frontendPrincipalId string = functionApp.outputs.servicePrincipal
+output backendPrincipalId string = functionAppBackend.outputs.servicePrincipal
