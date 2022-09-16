@@ -15,12 +15,24 @@ env:
   BACKEND_PROJECT_FILE: "./src/Minifier.Backend/Minifier.Backend.csproj"
   GITHUB_SHA: ${{ github.sha }}
   DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME: deployments
-  DEPLOYMENT_STORAGEACCOUNT_NAME_PROD: minifierdeployprodweusa
-  DEPLOYMENT_BACKEND_URL_PROD: https://minifierdeployprodweusa.blob.core.windows.net/deployments/${{ github.sha }}/backend.zip
-  DEPLOYMENT_FRONTEND_URL_PROD: https://minifierdeployprodweusa.blob.core.windows.net/deployments/${{ github.sha }}/frontend.zip
-  DEPLOYMENT_STORAGEACCOUNT_NAME_TEST: minifierdeploytestweusa
-  DEPLOYMENT_BACKEND_URL_TEST: https://minifierdeploytestweusa.blob.core.windows.net/deployments/${{ github.sha }}/backend.zip
-  DEPLOYMENT_FRONTEND_URL_TEST: https://minifierdeploytestweusa.blob.core.windows.net/deployments/${{ github.sha }}/frontend.zip
+  DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_WEU: minifierdeployprodweusa
+  DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_WUS: minifierdeployprodwussa
+  DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_AUS: minifierdeployprodaussa
+  DEPLOYMENT_BACKEND_URL_PROD_WEU: https://minifierdeployprodweusa.blob.core.windows.net/deployments/${{ github.sha }}/backend.zip
+  DEPLOYMENT_FRONTEND_URL_PROD_WEU: https://minifierdeployprodweusa.blob.core.windows.net/deployments/${{ github.sha }}/frontend.zip
+  DEPLOYMENT_BACKEND_URL_PROD_WUS: https://minifierdeployprodwussa.blob.core.windows.net/deployments/${{ github.sha }}/backend.zip
+  DEPLOYMENT_FRONTEND_URL_PROD_WUS: https://minifierdeployprodwussa.blob.core.windows.net/deployments/${{ github.sha }}/frontend.zip
+  DEPLOYMENT_BACKEND_URL_PROD_AUS: https://minifierdeployprodaussa.blob.core.windows.net/deployments/${{ github.sha }}/backend.zip
+  DEPLOYMENT_FRONTEND_URL_PROD_AUS: https://minifierdeployprodaussa.blob.core.windows.net/deployments/${{ github.sha }}/frontend.zip
+  DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_WEU: minifierdeploytestweusa
+  DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_WUS: minifierdeploytestwussa
+  DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_AUS: minifierdeploytestaussa
+  DEPLOYMENT_BACKEND_URL_TEST_WEU: https://minifierdeploytestweusa.blob.core.windows.net/deployments/${{ github.sha }}/backend.zip
+  DEPLOYMENT_FRONTEND_URL_TEST_WEU: https://minifierdeploytestweusa.blob.core.windows.net/deployments/${{ github.sha }}/frontend.zip
+  DEPLOYMENT_BACKEND_URL_TEST_WUS: https://minifierdeploytestwussa.blob.core.windows.net/deployments/${{ github.sha }}/backend.zip
+  DEPLOYMENT_FRONTEND_URL_TEST_WUS: https://minifierdeploytestwussa.blob.core.windows.net/deployments/${{ github.sha }}/frontend.zip
+  DEPLOYMENT_BACKEND_URL_TEST_AUS: https://minifierdeploytestaussa.blob.core.windows.net/deployments/${{ github.sha }}/backend.zip
+  DEPLOYMENT_FRONTEND_URL_TEST_AUS: https://minifierdeploytestaussa.blob.core.windows.net/deployments/${{ github.sha }}/frontend.zip
 
 jobs:
   compile-functions-app:
@@ -132,8 +144,12 @@ jobs:
         uses: Azure/cli@1.0.4
         with:
           inlineScript: |
-            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD }} -n '${{ env.GITHUB_SHA }}/backend.zip'
-            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD }} -n '${{ env.GITHUB_SHA }}/frontend.zip'
+            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_WEU }} -n '${{ env.GITHUB_SHA }}/backend.zip'
+            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_WEU }} -n '${{ env.GITHUB_SHA }}/frontend.zip'
+            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_WUS }} -n '${{ env.GITHUB_SHA }}/backend.zip'
+            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_WUS }} -n '${{ env.GITHUB_SHA }}/frontend.zip'
+            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_AUS }} -n '${{ env.GITHUB_SHA }}/backend.zip'
+            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_AUS }} -n '${{ env.GITHUB_SHA }}/frontend.zip'
 
       - name: Deploy packages to test
         if: github.ref == 'refs/heads/develop'
@@ -141,8 +157,12 @@ jobs:
         uses: Azure/cli@1.0.4
         with:
           inlineScript: |
-            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST }} -n '${{ env.GITHUB_SHA }}/backend.zip'
-            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST }} -n '${{ env.GITHUB_SHA }}/frontend.zip'
+            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_WEU }} -n '${{ env.GITHUB_SHA }}/backend.zip'
+            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_WEU }} -n '${{ env.GITHUB_SHA }}/frontend.zip'
+            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_WUS }} -n '${{ env.GITHUB_SHA }}/backend.zip'
+            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_WUS }} -n '${{ env.GITHUB_SHA }}/frontend.zip'
+            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_AUS }} -n '${{ env.GITHUB_SHA }}/backend.zip'
+            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_AUS }} -n '${{ env.GITHUB_SHA }}/frontend.zip'
 
   application-infrastructure:
     needs: [publish-bicep, basic-infrastructure, deploy-functions-package]
@@ -163,11 +183,19 @@ jobs:
         id: deployinfrastructureprod
         uses: Azure/cli@1.0.4
         with:
-          inlineScript: az deployment sub create --location WestEurope --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.json --parameters frontendPackageReferenceLocation='${{ env.DEPLOYMENT_FRONTEND_URL_PROD }}' backendPackageReferenceLocation='${{ env.DEPLOYMENT_BACKEND_URL_PROD }}'
+          inlineScript: |
+            az deployment sub create --location WestEurope --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.json --parameters \
+              frontendPackageReferenceLocationWeu='${{ env.DEPLOYMENT_FRONTEND_URL_PROD_WEU }}' backendPackageReferenceLocationWeu='${{ env.DEPLOYMENT_BACKEND_URL_PROD_WEU }}' \
+              frontendPackageReferenceLocationWus='${{ env.DEPLOYMENT_FRONTEND_URL_PROD_WUS }}' backendPackageReferenceLocationWus='${{ env.DEPLOYMENT_BACKEND_URL_PROD_WUS }}' \
+              frontendPackageReferenceLocationAus='${{ env.DEPLOYMENT_FRONTEND_URL_PROD_AUS }}' backendPackageReferenceLocationAus='${{ env.DEPLOYMENT_BACKEND_URL_PROD_AUS }}'
 
       - name: Deploy Infrastructure to test
         if: github.ref == 'refs/heads/develop'
         id: deployinfrastructuretest
         uses: Azure/cli@1.0.4
         with:
-          inlineScript: az deployment sub create --location WestEurope --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.test.json --parameters frontendPackageReferenceLocation='${{ env.DEPLOYMENT_FRONTEND_URL_TEST }}' backendPackageReferenceLocation='${{ env.DEPLOYMENT_BACKEND_URL_TEST }}'
+          inlineScript: |
+            az deployment sub create --location WestEurope --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.test.json --parameters \
+              frontendPackageReferenceLocationWeu='${{ env.DEPLOYMENT_FRONTEND_URL_TEST_WEU }}' backendPackageReferenceLocationWeu='${{ env.DEPLOYMENT_BACKEND_URL_TEST_WEU }}' \
+              frontendPackageReferenceLocationWus='${{ env.DEPLOYMENT_FRONTEND_URL_TEST_WUS }}' backendPackageReferenceLocationWus='${{ env.DEPLOYMENT_BACKEND_URL_TEST_WUS }}' \
+              frontendPackageReferenceLocationAus='${{ env.DEPLOYMENT_FRONTEND_URL_TEST_AUS }}' backendPackageReferenceLocationAus='${{ env.DEPLOYMENT_BACKEND_URL_TEST_AUS }}'
