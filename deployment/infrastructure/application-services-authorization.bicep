@@ -68,6 +68,9 @@ module serviceBusBackendSenderAuthorization 'Authorization/roleAssignmentsServic
 }
 module serviceBusBackendReaderAuthorization 'Authorization/roleAssignmentsServiceBus.bicep' = {
   name: 'serviceBusBackendReaderAuthorization'
+  dependsOn: [
+    serviceBusBackendSenderAuthorization
+  ]
   params: {
     principalId: backendPrincipalId
     roleDefinitionId: serviceBusDataReceiver
@@ -77,6 +80,10 @@ module serviceBusBackendReaderAuthorization 'Authorization/roleAssignmentsServic
 
 module serviceBusFrontendAuthorization 'Authorization/roleAssignmentsServiceBus.bicep' = {
   name: 'serviceBusFrontendAuthorization'
+  dependsOn: [
+    serviceBusBackendSenderAuthorization
+    serviceBusBackendReaderAuthorization
+  ]
   params: {
     principalId: frontendPrincipalId
     roleDefinitionId: serviceBusDataReceiver
