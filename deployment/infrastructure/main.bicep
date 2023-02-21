@@ -31,6 +31,7 @@ var regionWestEuropeName = 'weu'
 var regionWestUsName = 'wus'
 var regionAustraliaSouthEastName = 'aus'
 var fullDomainName = '${subdomain}.${hostname}'
+var serviceBusUpdateFrontendTopicSubscriptionNamePrefix = 'updatefrontend'
 
 targetScope = 'subscription'
 
@@ -63,6 +64,16 @@ module applicationServices 'application-services.bicep' = {
   }
 }
 
+module servicebusSubscriptions 'ServiceBus/subscription.bicep' = [for region in [regionAustraliaSouthEastName, regionWestEuropeName, regionWestUsName]: {
+  scope: rgWestEurope
+  name: '${systemName}${region}-update-cache-subscriptions'
+  params: {
+    name: '${serviceBusUpdateFrontendTopicSubscriptionNamePrefix}${region}'
+    namespaceName: applicationServices.outputs.serviceBusNamespaceName
+    topicName: applicationServices.outputs.serviceBusIncomingUrlTopicName
+  }
+}]
+
 module applicationWestEurope 'application-infrastructure.bicep' = {
   name: '${systemName}${regionWestEuropeName}-apps'
   params: {
@@ -74,6 +85,7 @@ module applicationWestEurope 'application-infrastructure.bicep' = {
     fullDomainName: fullDomainName
     databaseAccountName: applicationServices.outputs.databaseAccountName
     serviceBusNamespaceName: applicationServices.outputs.serviceBusNamespaceName
+    serviceBusUpdateFrontendTopicSubscriptionNamePrefix: serviceBusUpdateFrontendTopicSubscriptionNamePrefix
     slugContainerName: applicationServices.outputs.slugContainerName
     sqlDatabaseName: applicationServices.outputs.sqlDatabaseName
   }
@@ -102,6 +114,7 @@ module applicationWestUs 'application-infrastructure.bicep' = {
     fullDomainName: fullDomainName
     databaseAccountName: applicationServices.outputs.databaseAccountName
     serviceBusNamespaceName: applicationServices.outputs.serviceBusNamespaceName
+    serviceBusUpdateFrontendTopicSubscriptionNamePrefix: serviceBusUpdateFrontendTopicSubscriptionNamePrefix
     slugContainerName: applicationServices.outputs.slugContainerName
     sqlDatabaseName: applicationServices.outputs.sqlDatabaseName
   }
@@ -133,6 +146,7 @@ module applicationAustraliaSouthEast 'application-infrastructure.bicep' = {
     fullDomainName: fullDomainName
     databaseAccountName: applicationServices.outputs.databaseAccountName
     serviceBusNamespaceName: applicationServices.outputs.serviceBusNamespaceName
+    serviceBusUpdateFrontendTopicSubscriptionNamePrefix: serviceBusUpdateFrontendTopicSubscriptionNamePrefix
     slugContainerName: applicationServices.outputs.slugContainerName
     sqlDatabaseName: applicationServices.outputs.sqlDatabaseName
   }

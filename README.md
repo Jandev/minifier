@@ -106,12 +106,15 @@ The contents of the `Minifier.Frontend` project should look similar to the follo
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "UrlMinifierRepository__accountEndpoint": "https://{yourCosmosDbAccountName}.documents.azure.com:443/",
     "UrlMinifierRepository__DatabaseName": "minifier", // This one is defined in the Bicep template, but you can change it if you want.
-    "UrlMinifierRepository__CollectionName": "urls" // This one is defined in the Bicep template, but you can change it if you want.
+    "UrlMinifierRepository__CollectionName": "urls", // This one is defined in the Bicep template, but you can change it if you want.
+    "MinifierIncomingMessages__fullyQualifiedNamespace": "{yourServiceBusNamespaceName}.servicebus.windows.net",
+    "IncomingUrlsTopicName": "incoming-minified-urls", // This one is defined in the Bicep template, but you can change it if you want.
+    "IncomingUrlsProcessingSubscription": "updatefrontendweu" // This one is defined in the Bicep template, but you can change it if you want.
   }
 }
 ```
 
-To get the necessary Azure resources, run the following Azure CLI commands:
+To get the necessary Azure resources, run the following Azure CLI commands in the folder `./deployment/infrastructure/`:
 
 ```azcli
 az deployment sub create --location WestEurope --template-file basic-infrastructure.bicep --parameters parameters.lcl.json

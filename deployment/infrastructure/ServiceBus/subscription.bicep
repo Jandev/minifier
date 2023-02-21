@@ -15,3 +15,5 @@ resource subscription 'Microsoft.ServiceBus/namespaces/topics/subscriptions@2021
   name: name
   parent: topic
 }
+
+output name string = subscription.name

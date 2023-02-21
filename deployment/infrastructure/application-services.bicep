@@ -80,3 +80,4 @@ output databaseAccountName string = databaseAccount.outputs.accountName
 output slugContainerName string = slugContainer.outputs.name
 output sqlDatabaseName string = sqlDatabase.outputs.databaseName
 output serviceBusNamespaceName string = serviceBusNamespace.outputs.name
+output serviceBusIncomingUrlTopicName string = serviceBusIncomingMinifiedUrlsTopicName
