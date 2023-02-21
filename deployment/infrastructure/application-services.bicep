@@ -67,10 +67,10 @@ module processSubscription 'ServiceBus/subscription.bicep' = {
   }
 }
 
-module invalidateSubscription 'ServiceBus/subscription.bicep' = {
-  name: 'invalidateSubscription'
+module updatefrontendSubscription 'ServiceBus/subscription.bicep' = {
+  name: 'updatefrontendSubscription'
   params: {
-    name: 'invalidate${azureRegion}'
+    name: 'updatefrontend${azureRegion}'
     namespaceName: serviceBusNamespace.outputs.name
     topicName: topic.outputs.name
   }
