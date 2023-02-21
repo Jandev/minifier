@@ -76,7 +76,7 @@ az cosmosdb sql role assignment create --account-name $accountName --resource-gr
 
 The `principalId` is the Object Id of your Managed Identity OR from your own Azure Active Directory account.
 
-The contents of the `Minifier.Frontend` project should look similar to the following:
+The contents of the `Minifier.Backend` project should look similar to the following:
 
 ```json
 {
@@ -88,6 +88,8 @@ The contents of the `Minifier.Frontend` project should look similar to the follo
     "IncomingUrlsTopicName": "incoming-minified-urls", // This one is defined in the Bicep template, but you can change it if you want.
     "IncomingUrlsProcessingSubscription": "process", // This one is defined in the Bicep template, but you can change it if you want.
     "UrlMinifierRepository__accountEndpoint": "https://{yourCosmosDbAccountName}.documents.azure.com:443/",
+    // Or this if you're running with the local emulator
+    "UrlMinifierRepository": "AccountEndpoint=https://localhost:8081/;AccountKey={theEmulatorKey}",
     "UrlMinifierRepository__DatabaseName": "minifier", // This one is defined in the Bicep template, but you can change it if you want.
     "UrlMinifierRepository__CollectionName": "urls" // This one is defined in the Bicep template, but you can change it if you want.
   }
@@ -107,6 +109,14 @@ The contents of the `Minifier.Frontend` project should look similar to the follo
     "UrlMinifierRepository__CollectionName": "urls" // This one is defined in the Bicep template, but you can change it if you want.
   }
 }
+```
+
+To get the necessary Azure resources, run the following Azure CLI commands:
+
+```azcli
+az deployment sub create --location WestEurope --template-file basic-infrastructure.bicep --parameters parameters.lcl.json
+
+az deployment sub create --location WestEurope --template-file main.bicep --parameters parameters.lcl.json
 ```
 
 ### In Azure
