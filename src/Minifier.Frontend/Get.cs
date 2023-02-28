@@ -1,42 +1,74 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace Minifier.Frontend
 {
     public class Get
     {
+        private readonly Configuration configuration;
         private readonly ILogger<Get> logger;
 
         private static Dictionary<string, string> _localCache = new Dictionary<string, string>();
 
-        public Get(ILogger<Get> logger)
+        public Get(
+            ILogger<Get> logger)
         {
+            this.configuration = new Configuration();
             this.logger = logger;
         }
 
         [FunctionName(nameof(Get))]
-        public IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{Slug}")]
+        public async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{slug}")]
             HttpRequest req,
+            string slug,
             [CosmosDB(
-                "%UrlMinifierRepository:DatabaseName%",
-                "%UrlMinifierRepository:CollectionName%",
-                Connection = "UrlMinifierRepository",
-                Id = "{Slug}",
-                PartitionKey = "{Slug}")]
-            MinifiedUrlEntity existingMinifiedUrlEntity)
+                databaseName: "%UrlMinifierRepository:DatabaseName%",
+                containerName: "%UrlMinifierRepository:CollectionName%",
+                Connection = "UrlMinifierRepository"
+                )]
+            CosmosClient client)
         {
-            return new RedirectResult(existingMinifiedUrlEntity.url);
+            var container = client.GetContainer(
+                                    this.configuration.UrlMinifierRepository.DatabaseName, 
+                                    this.configuration.UrlMinifierRepository.CollectionName);
+
+            var queryDefinition = new QueryDefinition(
+                "SELECT u.url FROM urls u WHERE u.id = @slug")
+                .WithParameter("@slug", slug);
+            var queryRequestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(slug) };
+
+            string foundMinifiedUrl = default;
+            using (var resultSet = container.GetItemQueryIterator<MinifiedUrlEntity>(
+                                                                    queryDefinition, 
+                                                                    requestOptions: queryRequestOptions)) 
+            {
+                while (resultSet.HasMoreResults) 
+                {
+                    var response = await resultSet.ReadNextAsync();
+                    foundMinifiedUrl = response.First()?.url;
+                    break;
+                }
+            }
+
+            if(foundMinifiedUrl == null)
+            {
+                return new NotFoundResult();
+            }
+            return new RedirectResult(foundMinifiedUrl);
         }
 
         [FunctionName(nameof(UpdateLocalCache))]
         public void UpdateLocalCache(
-            [ServiceBusTrigger("%IncomingUrlsTopicName%", "%UpdateFrontendSubscription%", Connection = "MinifierIncomingMessages")]
+            [ServiceBusTrigger("%IncomingUrlsTopicName%", "%IncomingUrlsProcessingSubscription%", Connection = "MinifierIncomingMessages")]
             MinifiedUrl incomingCreateMinifiedUrlCommand
             )
         {
