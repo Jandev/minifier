@@ -1,5 +1,6 @@
 param systemName string
 @allowed([
+  'lcl'
   'dev'
   'test'
   'acc'

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": {
+      "value": "lcl"
+    },
+    "hostname": {
+      "value": "jdv.li"
+    },
+    "subdomain": {
+      "value": "skip"
+    },
+    "frontendPackageReferenceLocationWeu": {
+      "value": "https://somepath/package.zip"
+    },
+    "backendPackageReferenceLocationWeu": {
+      "value": "https://somepath/backendPackage.zip"
+    },
+    "frontendPackageReferenceLocationWus": {
+      "value": "https://somepath/package.zip"
+    },
+    "backendPackageReferenceLocationWus": {
+      "value": "https://somepath/backendPackage.zip"
+    },
+    "frontendPackageReferenceLocationAus": {
+      "value": "https://somepath/package.zip"
+    },
+    "backendPackageReferenceLocationAus": {
+      "value": "https://somepath/backendPackage.zip"
+    }
+  }
+}

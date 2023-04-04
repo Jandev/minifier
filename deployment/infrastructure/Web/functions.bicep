@@ -1,5 +1,6 @@
 param systemName string
 @allowed([
+  'lcl'
   'dev'
   'test'
   'acc'
@@ -34,7 +35,7 @@ resource webApp 'Microsoft.Web/sites@2020-12-01' = {
   }
 }
 
-resource webAppNewCname 'Microsoft.Web/sites/hostNameBindings@2021-02-01' = if (fullDomainName != 'skip') {
+resource webAppNewCname 'Microsoft.Web/sites/hostNameBindings@2021-02-01' = if (!contains(fullDomainName, 'skip')) {
   name: '${webAppName}/${subdomainPrefix}${fullDomainName}'
   dependsOn: [
     webApp

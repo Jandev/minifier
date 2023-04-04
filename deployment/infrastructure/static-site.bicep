@@ -1,4 +1,5 @@
 @allowed([
+  'lcl'
   'dev'
   'test'
   'acc'

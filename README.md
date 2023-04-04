@@ -76,7 +76,7 @@ az cosmosdb sql role assignment create --account-name $accountName --resource-gr
 
 The `principalId` is the Object Id of your Managed Identity OR from your own Azure Active Directory account.
 
-The contents of the `Minifier.Frontend` project should look similar to the following:
+The contents of the `Minifier.Backend` project should look similar to the following:
 
 ```json
 {
@@ -88,6 +88,8 @@ The contents of the `Minifier.Frontend` project should look similar to the follo
     "IncomingUrlsTopicName": "incoming-minified-urls", // This one is defined in the Bicep template, but you can change it if you want.
     "IncomingUrlsProcessingSubscription": "process", // This one is defined in the Bicep template, but you can change it if you want.
     "UrlMinifierRepository__accountEndpoint": "https://{yourCosmosDbAccountName}.documents.azure.com:443/",
+    // Or this if you're running with the local emulator
+    "UrlMinifierRepository": "AccountEndpoint=https://localhost:8081/;AccountKey={theEmulatorKey}",
     "UrlMinifierRepository__DatabaseName": "minifier", // This one is defined in the Bicep template, but you can change it if you want.
     "UrlMinifierRepository__CollectionName": "urls" // This one is defined in the Bicep template, but you can change it if you want.
   }
@@ -104,9 +106,20 @@ The contents of the `Minifier.Frontend` project should look similar to the follo
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "UrlMinifierRepository__accountEndpoint": "https://{yourCosmosDbAccountName}.documents.azure.com:443/",
     "UrlMinifierRepository__DatabaseName": "minifier", // This one is defined in the Bicep template, but you can change it if you want.
-    "UrlMinifierRepository__CollectionName": "urls" // This one is defined in the Bicep template, but you can change it if you want.
+    "UrlMinifierRepository__CollectionName": "urls", // This one is defined in the Bicep template, but you can change it if you want.
+    "MinifierIncomingMessages__fullyQualifiedNamespace": "{yourServiceBusNamespaceName}.servicebus.windows.net",
+    "IncomingUrlsTopicName": "incoming-minified-urls", // This one is defined in the Bicep template, but you can change it if you want.
+    "IncomingUrlsProcessingSubscription": "updatefrontendweu" // This one is defined in the Bicep template, but you can change it if you want.
   }
 }
+```
+
+To get the necessary Azure resources, run the following Azure CLI commands in the folder `./deployment/infrastructure/`:
+
+```azcli
+az deployment sub create --location WestEurope --template-file basic-infrastructure.bicep --parameters parameters.lcl.json
+
+az deployment sub create --location WestEurope --template-file main.bicep --parameters parameters.lcl.json
 ```
 
 ### In Azure
@@ -118,7 +131,7 @@ This is all being handled by the Bicep template in this repository, so no need t
 To deploy this solution you need to create a service principal in Azure which has the appropriate roles to create resource groups, all resources and set permissions (RBAC) to all these resources. The easiest way to set this up is by using the `Owner` role, as it has enough permissions to apply roles. However, keep in mind, this grants the service principal a lot of power on the entire subscription.
 
 ```azcli
-az ad sp create-for-rbac --name "minifier" --role owner --sdk-auth
+az ad sp create-for-rbac --name "minifier" --role owner --scopes /subscriptions/{subscriptionId} --sdk-auth
 ```
 
 What I'm doing to limit this is to make this service principal a `Contributor`, which still grants it a lot of power, and applying the `Owner` role to the created resource group after the first (failed) deployment.
