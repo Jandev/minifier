@@ -13,6 +13,7 @@ param backendPackageReferenceLocation string
 param fullDomainName string
 
 param serviceBusNamespaceName string
+param serviceBusUpdateFrontendTopicSubscriptionNamePrefix string
 param databaseAccountName string
 param sqlDatabaseName string
 param slugContainerName string
@@ -172,6 +173,18 @@ resource config 'Microsoft.Web/sites/config@2020-12-01' = {
       {
         name: 'UrlMinifierRepository__CollectionName'
         value: slugContainerName
+      }
+      {
+        name: 'MinifierIncomingMessages__fullyQualifiedNamespace'
+        value: '${serviceBusNamespaceName}.servicebus.windows.net'
+      }
+      {
+        name: 'IncomingUrlsTopicName'
+        value: serviceBusIncomingMinifiedUrlsTopicName
+      }
+      {
+        name: 'IncomingUrlsProcessingSubscription'
+        value: '${serviceBusUpdateFrontendTopicSubscriptionNamePrefix}${azureRegion}'
       }
     ]
   }
