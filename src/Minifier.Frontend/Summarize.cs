@@ -1,12 +1,10 @@
-using System;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using Minifier.Frontend.OpenAI;
 
 namespace Minifier.Frontend
 {
@@ -14,14 +12,17 @@ namespace Minifier.Frontend
 	{
 		private readonly Configuration configuration;
 		private readonly IGetFullUrlFromSlug getFullUrlFromSlug;
+		private readonly ISummarize summarize;
 		private readonly ILogger<Summarize> logger;
 
 		public Summarize(
 			IGetFullUrlFromSlug getFullUrlFromSlug,
+			ISummarize summarize,
 			ILogger<Summarize> logger)
 		{
 			this.configuration = new Configuration();
 			this.getFullUrlFromSlug = getFullUrlFromSlug;
+			this.summarize = summarize;
 			this.logger = logger;
 		}
 
@@ -33,7 +34,27 @@ namespace Minifier.Frontend
 		{
 			this.logger.LogInformation("Requesting summary for `{slug}`.", slug);
 
-			return new OkObjectResult("ok");
+			string foundMinifiedUrl = await getFullUrlFromSlug.Run(slug);
+			if (foundMinifiedUrl == null)
+			{
+				return new NotFoundResult();
+			}
+
+			var summary = await this.summarize.Invoke(foundMinifiedUrl);
+
+			return new OkObjectResult(
+				new SummarizeResponse
+				{
+					Url = foundMinifiedUrl,
+					Summary = summary
+				}
+			);
+		}
+
+		public class SummarizeResponse
+		{
+			public string Url { get; set; }
+			public string Summary { get; set; }
 		}
 	}
 }

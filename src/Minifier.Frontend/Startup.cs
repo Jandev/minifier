@@ -3,6 +3,7 @@ using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Minifier.Frontend;
+using Minifier.Frontend.OpenAI;
 
 [assembly: FunctionsStartup(typeof(Startup))]
 namespace Minifier.Frontend
@@ -21,6 +22,7 @@ namespace Minifier.Frontend
 				var clientBuilder = new CosmosClientBuilder(connectionString);
 				return clientBuilder.Build();
 			});
+			builder.Services.AddTransient<ISummarize, OpenAI.Summarize>();
 		}
 	}
 }
