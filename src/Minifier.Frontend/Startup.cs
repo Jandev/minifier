@@ -12,7 +12,6 @@ namespace Minifier.Frontend
 	{
 		public override void Configure(IFunctionsHostBuilder builder)
 		{
-			builder.Services.AddLogging();
 			builder.Services.AddTransient<IGetFullUrlFromSlug, GetFullUrlFromSlug>();
 			builder.Services.AddSingleton<Configuration>();
 			builder.Services.AddTransient<CosmosClient>(s =>
