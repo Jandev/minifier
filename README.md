@@ -155,6 +155,40 @@ After executing the command above, you should have an output similar to the foll
 
 Store this value in a GitHub secret called `AZURE_DEV` and you're good to go!
 
+# Additional features
+
+The basics of the URL minfier are covered above. The following contents will be about additional features which are totally optional to add. During deployment the toggle `additionalFeatures` can be set to either `true` or `false` depending on if you want to have this deployed too.
+
+## Summarize contents of a page
+
+An API call can be made to the `summarize` endpoint, using a slug.
+
+```http
+GET https://{host}/summarize/{slug}
+```
+
+This wil result in the following response:
+
+```json
+{
+    "summary": "lorem ipsum..."
+}
+```
+
+The summary is created using Azure Open AI service with a specified LLM in the configuration.
+
+The following settings are necessary, along with a deployed Azure Open AI service and model.
+
+```json
+{
+    "OpenAiServiceCompletionEndpoint": "",
+    "OpenAiServiceKey": "",
+    "OpenAiServiceDeploymentId": "",
+}
+```
+
+> **Note:** At this moment in time, only specific Azure subscriptions can deploy the Azure Open AI service. While this repository contains the Bicep template for it, the service is deployed in a different subscription. Therefore, the settings necessary will be injected via GitHub secrets to the deployment.
+
 <!-- Aliases for URLs: please place here any long urls to keep clean markdown markup -->
 
 [actions build badge]: https://github.com/Jandev/minifier/actions/workflows/build.yml/badge.svg "Build solution"
