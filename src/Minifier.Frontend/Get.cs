@@ -1,8 +1,7 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
+using System.Net;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
@@ -21,28 +20,30 @@ namespace Minifier.Frontend
 			this.logger = logger;
 		}
 
-		[FunctionName(nameof(Get))]
-		public async Task<IActionResult> Run(
+		[Function(nameof(Get))]
+		public async Task<HttpResponseData> Run(
 			[HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{slug}")]
-			HttpRequest req,
+			HttpRequestData req,
 			string slug)
 		{
 			string foundMinifiedUrl = await getFullUrlFromSlug.Run(slug);
 
 			if (foundMinifiedUrl == null)
 			{
-				return new NotFoundResult();
+				return req.CreateResponse(HttpStatusCode.NotFound);
 			}
-			return new RedirectResult(foundMinifiedUrl);
+			var redirectResponse = req.CreateResponse(HttpStatusCode.Redirect);
+			redirectResponse.Headers.Add("Location", foundMinifiedUrl);
+			return redirectResponse;
 		}
 
-		[FunctionName(nameof(UpdateLocalCache))]
+		[Function(nameof(UpdateLocalCache))]
 		public void UpdateLocalCache(
 			[ServiceBusTrigger("%IncomingUrlsTopicName%", "%IncomingUrlsProcessingSubscription%", Connection = "MinifierIncomingMessages")]
 			MinifiedUrl incomingCreateMinifiedUrlCommand
 			)
 		{
-			Cache.Entries[incomingCreateMinifiedUrlCommand.Slug] = incomingCreateMinifiedUrlCommand.Url;
+			Cache.MinifierEntries[incomingCreateMinifiedUrlCommand.Slug] = incomingCreateMinifiedUrlCommand.Url;
 			this.logger.LogInformation("Upserted {slug} with {url} to the local cache.", incomingCreateMinifiedUrlCommand.Slug, incomingCreateMinifiedUrlCommand.Url);
 		}
 

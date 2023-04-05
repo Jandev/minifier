@@ -24,15 +24,15 @@ namespace Minifier.Frontend
 		{
 			string foundMinifiedUrl = default;
 
-			if (Cache.Entries.ContainsKey(slug))
+			if (Cache.MinifierEntries.ContainsKey(slug))
 			{
-				foundMinifiedUrl = Cache.Entries[slug];
+				foundMinifiedUrl = Cache.MinifierEntries[slug];
 				this.logger.LogInformation("Retrieved `{slug}` from cache.", slug);
 			}
 			else
 			{
 				foundMinifiedUrl = await FindUrlFromRepository(slug);
-				Cache.Entries[slug] = foundMinifiedUrl;
+				Cache.MinifierEntries[slug] = foundMinifiedUrl;
 				this.logger.LogInformation("Added `{slug}` to cache.", slug);
 			}
 

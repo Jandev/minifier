@@ -3,59 +3,21 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.AI.OpenAI;
 using Microsoft.Extensions.Logging;
-using Microsoft.SemanticKernel.Orchestration;
-using Minifier.Frontend.OpenAI.SemanticKernel;
 
 namespace Minifier.Frontend.OpenAI
 {
 	internal class Summarize : ISummarize
 	{
 		private readonly Configuration configuration;
-		private readonly ILogger<Summarize> logger;
 		private bool useSemanticKernel = true;
 
 		public Summarize(
-			Configuration configuration,
-			ILogger<Summarize> logger)
+			Configuration configuration)
 		{
 			this.configuration = configuration;
-			this.logger = logger;
 		}
 
 		public async Task<string> Invoke(string url)
-		{
-			if(useSemanticKernel)
-			{
-				return await InvokeSemanticKernel(url);
-			}
-			else
-			{
-				return await InvokeOpenAiRaw(url);
-			}
-		}
-
-		private async Task<string> InvokeSemanticKernel(string url)
-		{
-			
-			var kernel = KernelFactory.CreateForRequest(
-				this.configuration.OpenAi,
-				this.logger);
-
-			var summarizeFunction = kernel.Skills.GetFunction(KernelFactory.SummarizeFunctionName);
-			var contextVariables = new ContextVariables();
-			contextVariables.Set("url", url);
-
-			var result = await kernel.RunAsync(contextVariables, summarizeFunction);
-
-			if (result.ErrorOccurred)
-			{
-				throw new Exception(result.LastErrorDescription);
-			}
-
-			return result.Result;
-		}
-
-		private async Task<string> InvokeOpenAiRaw(string url)
 		{
 			var request = $"Summarize the contents of the following web page: {url}";
 			OpenAIClient client = new OpenAIClient(
@@ -76,7 +38,7 @@ namespace Minifier.Frontend.OpenAI
 				});
 			Completions completions = completionsResponse.Value;
 
-			return completions.Choices[0].Text;
+			return completions.Choices[0].Text.Trim();
 		}
 	}
 

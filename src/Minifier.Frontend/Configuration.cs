@@ -23,5 +23,7 @@ namespace Minifier.Frontend
 		public string Endpoint { get; } = Environment.GetEnvironmentVariable("OpenAiServiceCompletionEndpoint", EnvironmentVariableTarget.Process);
 
 		public string DeploymentId { get; } = Environment.GetEnvironmentVariable("OpenAiServiceDeploymentId", EnvironmentVariableTarget.Process);
+		public string ModelName { get; } = Environment.GetEnvironmentVariable("OpenAiServiceModelName", EnvironmentVariableTarget.Process);
+		public bool UseSemanticKernel { get; } = bool.Parse(Environment.GetEnvironmentVariable("OpenAiServiceUseSemanticKernel", EnvironmentVariableTarget.Process));
 	}
 }

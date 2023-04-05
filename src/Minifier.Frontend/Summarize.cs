@@ -1,16 +1,14 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Minifier.Frontend.OpenAI;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
+using System.Net;
 
 namespace Minifier.Frontend
 {
 	public class Summarize
 	{
-		private readonly Configuration configuration;
 		private readonly IGetFullUrlFromSlug getFullUrlFromSlug;
 		private readonly ISummarize summarize;
 		private readonly ILogger<Summarize> logger;
@@ -20,16 +18,15 @@ namespace Minifier.Frontend
 			ISummarize summarize,
 			ILogger<Summarize> logger)
 		{
-			this.configuration = new Configuration();
 			this.getFullUrlFromSlug = getFullUrlFromSlug;
 			this.summarize = summarize;
 			this.logger = logger;
 		}
 
-		[FunctionName(nameof(Summarize))]
-		public async Task<IActionResult> Run(
+		[Function(nameof(Summarize))]
+		public async Task<HttpResponseData> Run(
 			[HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "summarize/{slug}")]
-			HttpRequest req,
+			HttpRequestData req,
 			string slug)
 		{
 			this.logger.LogInformation("Requesting summary for `{slug}`.", slug);
@@ -37,18 +34,30 @@ namespace Minifier.Frontend
 			string foundMinifiedUrl = await getFullUrlFromSlug.Run(slug);
 			if (foundMinifiedUrl == null)
 			{
-				return new NotFoundResult();
+				return req.CreateResponse(HttpStatusCode.NotFound);
 			}
 
-			var summary = await this.summarize.Invoke(foundMinifiedUrl);
+			if (Cache.SummaryEntries.ContainsKey(slug))
+			{
+				return await CreateSummaryResponse(req, foundMinifiedUrl, Cache.SummaryEntries[slug]);
+			}			
 
-			return new OkObjectResult(
+			var summary = await this.summarize.Invoke(foundMinifiedUrl);
+			Cache.SummaryEntries[slug] = summary;
+
+			return await CreateSummaryResponse(req, foundMinifiedUrl, summary);
+		}
+
+		private static async Task<HttpResponseData> CreateSummaryResponse(HttpRequestData req, string foundMinifiedUrl, string summary)
+		{
+			var response = req.CreateResponse(HttpStatusCode.OK);
+			await response.WriteAsJsonAsync(
 				new SummarizeResponse
 				{
 					Url = foundMinifiedUrl,
-					Summary = summary.Trim()
-				}
-			);
+					Summary = summary
+				});
+			return response;
 		}
 
 		public class SummarizeResponse

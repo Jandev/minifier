@@ -1,11 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.KernelExtensions;
 using Microsoft.SemanticKernel.TemplateEngine;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -14,11 +12,11 @@ namespace Minifier.Frontend.OpenAI.SemanticKernel
 {
 	internal class KernelFactory
 	{
-		internal const string SummarizeFunctionName = "summarize";
+		internal const string MinifierSkills = "minifier";
 
 		private static IEnumerable<string> skillsToLoad = new List<string>
 		{
-			SummarizeFunctionName
+			MinifierSkills
 		};
 
 		internal static IKernel CreateForRequest(
@@ -40,7 +38,7 @@ namespace Minifier.Frontend.OpenAI.SemanticKernel
 				{
 					c.AddAzureOpenAITextCompletionService(
 						openAiConfiguration.DeploymentId,
-						openAiConfiguration.DeploymentId,
+						"text-davinci-003",
 						openAiConfiguration.Endpoint,
 						openAiConfiguration.ApiKey);
 				});
@@ -54,7 +52,7 @@ namespace Minifier.Frontend.OpenAI.SemanticKernel
 		{
 			IKernel kernel = builder.Build();
 
-			RegisterSemanticSkills(kernel, SampleSkillsPath(), logger);
+			RegisterSemanticSkills(kernel, SkillsPath(), logger);
 
 			return kernel;
 		}
@@ -88,7 +86,7 @@ namespace Minifier.Frontend.OpenAI.SemanticKernel
 			}
 		}
 
-		private static string SampleSkillsPath()
+		private static string SkillsPath()
 		{
 			string skillsPath =
 				"OpenAI" + Path.DirectorySeparatorChar +
@@ -111,7 +109,7 @@ namespace Minifier.Frontend.OpenAI.SemanticKernel
 
 			if (!SearchPath(skillsPath, out string path))
 			{
-				throw new ConfigurationErrorsException("Skills directory not found.");
+				throw new ApplicationException("Skills directory not found.");
 			}
 
 			return path;
