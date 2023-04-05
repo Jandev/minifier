@@ -22,6 +22,8 @@ param openAiServiceEndpoint string = ''
 @secure()
 param openAiServiceKey string = ''
 param openAiDeploymentId string = ''
+param openAiModelName string = ''
+param openAiUseSemanticKernel bool = true
 
 var webAppName = '${systemName}-${environmentName}-${azureRegion}-app'
 var backendSystemName = '${systemName}backend'
@@ -144,7 +146,7 @@ resource config 'Microsoft.Web/sites/config@2020-12-01' = {
       }
       {
         name: 'FUNCTIONS_WORKER_RUNTIME'
-        value: 'dotnet'
+        value: 'dotnet-isolated'
       }
       {
         name: 'WEBSITE_CONTENTSHARE'
@@ -202,6 +204,14 @@ resource config 'Microsoft.Web/sites/config@2020-12-01' = {
       {
         name: 'OpenAiServiceDeploymentId'
         value: openAiDeploymentId
+      }
+      {
+        name: 'OpenAiServiceModelName'
+        value: openAiModelName
+      }
+      {
+        name: 'OpenAiServiceUseSemanticKernel'
+        value: openAiUseSemanticKernel
       }
     ]
   }

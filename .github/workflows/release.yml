@@ -189,7 +189,7 @@ jobs:
               frontendPackageReferenceLocationWeu='${{ env.DEPLOYMENT_FRONTEND_URL_PROD_WEU }}' backendPackageReferenceLocationWeu='${{ env.DEPLOYMENT_BACKEND_URL_PROD_WEU }}' \
               frontendPackageReferenceLocationWus='${{ env.DEPLOYMENT_FRONTEND_URL_PROD_WUS }}' backendPackageReferenceLocationWus='${{ env.DEPLOYMENT_BACKEND_URL_PROD_WUS }}' \
               frontendPackageReferenceLocationAus='${{ env.DEPLOYMENT_FRONTEND_URL_PROD_AUS }}' backendPackageReferenceLocationAus='${{ env.DEPLOYMENT_BACKEND_URL_PROD_AUS }}' \
-              openAiDeploymentId='${{ secrets.OPENAIDEPLOYMENTID }}' openAiServiceEndpoint='${{ secrets.OPENAIENDPOINT }}' openAiServiceKey='${{ secrets.OPENAIKEY }}'
+              openAiDeploymentId='${{ secrets.OPENAIDEPLOYMENTID }}' openAiServiceEndpoint='${{ secrets.OPENAIENDPOINT }}' openAiServiceKey='${{ secrets.OPENAIKEY }}' openAiModelName='text-davinci-003' openAiUseSemanticKernel=true
 
       - name: Deploy Infrastructure to test
         if: github.ref == 'refs/heads/develop'
@@ -202,4 +202,4 @@ jobs:
               frontendPackageReferenceLocationWeu='${{ env.DEPLOYMENT_FRONTEND_URL_TEST_WEU }}' backendPackageReferenceLocationWeu='${{ env.DEPLOYMENT_BACKEND_URL_TEST_WEU }}' \
               frontendPackageReferenceLocationWus='${{ env.DEPLOYMENT_FRONTEND_URL_TEST_WUS }}' backendPackageReferenceLocationWus='${{ env.DEPLOYMENT_BACKEND_URL_TEST_WUS }}' \
               frontendPackageReferenceLocationAus='${{ env.DEPLOYMENT_FRONTEND_URL_TEST_AUS }}' backendPackageReferenceLocationAus='${{ env.DEPLOYMENT_BACKEND_URL_TEST_AUS }}' \
-              openAiDeploymentId='${{ secrets.OPENAIDEPLOYMENTID }}' openAiServiceEndpoint='${{ secrets.OPENAIENDPOINT }}' openAiServiceKey='${{ secrets.OPENAIKEY }}'
+              openAiDeploymentId='${{ secrets.OPENAIDEPLOYMENTID }}' openAiServiceEndpoint='${{ secrets.OPENAIENDPOINT }}' openAiServiceKey='${{ secrets.OPENAIKEY }}' openAiModelName='text-davinci-003' openAiUseSemanticKernel=true

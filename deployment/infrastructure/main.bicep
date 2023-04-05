@@ -32,6 +32,8 @@ param openAiServiceEndpoint string = ''
 @secure()
 param openAiServiceKey string = ''
 param openAiDeploymentId string = ''
+param openAiModelName string = ''
+param openAiUseSemanticKernel bool = true
 
 var systemName = 'minifier'
 var fullSystemPrefix = '${systemName}-${environmentName}'
@@ -99,6 +101,8 @@ module applicationWestEurope 'application-infrastructure.bicep' = {
     openAiDeploymentId: openAiDeploymentId
     openAiServiceEndpoint: openAiServiceEndpoint
     openAiServiceKey: openAiServiceKey
+    openAiModelName: openAiModelName
+    openAiUseSemanticKernel: openAiUseSemanticKernel
   }
   scope: rgWestEurope
 }
