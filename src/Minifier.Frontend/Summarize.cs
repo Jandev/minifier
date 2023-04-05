@@ -46,7 +46,7 @@ namespace Minifier.Frontend
 				new SummarizeResponse
 				{
 					Url = foundMinifiedUrl,
-					Summary = summary
+					Summary = summary.Trim()
 				}
 			);
 		}
