@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
+using Azure.Identity;
 
 namespace Minifier.Frontend
 {
@@ -21,8 +22,10 @@ namespace Minifier.Frontend
 					services.AddTransient<CosmosClient>(s =>
 					{
 						var configuration = s.GetRequiredService<Configuration>();
-						var connectionString = configuration.UrlMinifierRepository.ConnectionString;
-						var clientBuilder = new CosmosClientBuilder(connectionString);
+						var clientBuilder = new CosmosClientBuilder(
+							configuration.UrlMinifierRepository.AccountEndpoint,
+							new DefaultAzureCredential()
+							);
 						return clientBuilder.Build();
 					});
 

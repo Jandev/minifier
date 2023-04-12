@@ -10,7 +10,7 @@ namespace Minifier.Frontend
 
 	internal class UrlMinifierRepository 
 	{
-		public string ConnectionString { get; } = Environment.GetEnvironmentVariable("UrlMinifierRepository", EnvironmentVariableTarget.Process);
+		public string AccountEndpoint { get; } = Environment.GetEnvironmentVariable($"{nameof(UrlMinifierRepository)}__accountEndpoint", EnvironmentVariableTarget.Process);
 
 		public string DatabaseName { get; } = Environment.GetEnvironmentVariable($"{nameof(UrlMinifierRepository)}__{nameof(DatabaseName)}", EnvironmentVariableTarget.Process);
 		public string CollectionName { get; } = Environment.GetEnvironmentVariable($"{nameof(UrlMinifierRepository)}__{nameof(CollectionName)}", EnvironmentVariableTarget.Process);
