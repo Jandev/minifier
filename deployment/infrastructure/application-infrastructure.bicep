@@ -18,6 +18,13 @@ param databaseAccountName string
 param sqlDatabaseName string
 param slugContainerName string
 
+param openAiServiceEndpoint string = ''
+@secure()
+param openAiServiceKey string = ''
+param openAiDeploymentId string = ''
+param openAiModelName string = ''
+param openAiUseSemanticKernel bool = true
+
 var webAppName = '${systemName}-${environmentName}-${azureRegion}-app'
 var backendSystemName = '${systemName}backend'
 var webAppNameBackend = '${backendSystemName}-${environmentName}-${azureRegion}-app'
@@ -139,7 +146,7 @@ resource config 'Microsoft.Web/sites/config@2020-12-01' = {
       }
       {
         name: 'FUNCTIONS_WORKER_RUNTIME'
-        value: 'dotnet'
+        value: 'dotnet-isolated'
       }
       {
         name: 'WEBSITE_CONTENTSHARE'
@@ -185,6 +192,26 @@ resource config 'Microsoft.Web/sites/config@2020-12-01' = {
       {
         name: 'IncomingUrlsProcessingSubscription'
         value: '${serviceBusUpdateFrontendTopicSubscriptionNamePrefix}${azureRegion}'
+      }      
+      {
+        name: 'OpenAiServiceCompletionEndpoint'
+        value: openAiServiceEndpoint
+      }
+      {
+        name: 'OpenAiServiceKey'
+        value: openAiServiceKey
+      }
+      {
+        name: 'OpenAiServiceDeploymentId'
+        value: openAiDeploymentId
+      }
+      {
+        name: 'OpenAiServiceModelName'
+        value: openAiModelName
+      }
+      {
+        name: 'OpenAiServiceUseSemanticKernel'
+        value: openAiUseSemanticKernel
       }
     ]
   }

@@ -25,6 +25,16 @@ param backendPackageReferenceLocationAus string
 param hostname string
 param subdomain string
 
+@description('Determines if additional features and services will be deployed. Default is `false`.')
+param additionalFeatures bool = false
+
+param openAiServiceEndpoint string = ''
+@secure()
+param openAiServiceKey string = ''
+param openAiDeploymentId string = ''
+param openAiModelName string = ''
+param openAiUseSemanticKernel bool = true
+
 var systemName = 'minifier'
 var fullSystemPrefix = '${systemName}-${environmentName}'
 var regionWestEuropeName = 'weu'
@@ -88,6 +98,11 @@ module applicationWestEurope 'application-infrastructure.bicep' = {
     serviceBusUpdateFrontendTopicSubscriptionNamePrefix: serviceBusUpdateFrontendTopicSubscriptionNamePrefix
     slugContainerName: applicationServices.outputs.slugContainerName
     sqlDatabaseName: applicationServices.outputs.sqlDatabaseName
+    openAiDeploymentId: openAiDeploymentId
+    openAiServiceEndpoint: openAiServiceEndpoint
+    openAiServiceKey: openAiServiceKey
+    openAiModelName: openAiModelName
+    openAiUseSemanticKernel: openAiUseSemanticKernel
   }
   scope: rgWestEurope
 }
