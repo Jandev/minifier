@@ -4,6 +4,7 @@ using Minifier.Frontend.OpenAI;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using System.Net;
+using System.Text.Json.Serialization;
 
 namespace Minifier.Frontend
 {
@@ -62,7 +63,10 @@ namespace Minifier.Frontend
 
 		public class SummarizeResponse
 		{
+			[JsonPropertyName("url")]
 			public string Url { get; set; }
+			
+			[JsonPropertyName("summary")]
 			public string Summary { get; set; }
 		}
 	}
