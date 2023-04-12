@@ -40,29 +40,5 @@ namespace Minifier.Frontend.OpenAI.SemanticKernel
 
 			return result.Result;
 		}
-
-		private async Task<string> InvokeOpenAiRaw(string url)
-		{
-			var request = $"Summarize the contents of the following web page: {url}";
-			OpenAIClient client = new OpenAIClient(
-				new Uri("https://westeurope.api.cognitive.microsoft.com/"),
-				new AzureKeyCredential(configuration.OpenAi.ApiKey));
-
-			Response<Completions> completionsResponse = await client.GetCompletionsAsync(
-				deploymentOrModelName: configuration.OpenAi.DeploymentId,
-				new CompletionsOptions()
-				{
-					Prompts = { request },
-					Temperature = 1,
-					MaxTokens = 1000,
-					NucleusSamplingFactor = (float)0.5,
-					FrequencyPenalty = 0,
-					PresencePenalty = 0,
-					GenerationSampleCount = 1,
-				});
-			Completions completions = completionsResponse.Value;
-
-			return completions.Choices[0].Text;
-		}
 	}
 }
