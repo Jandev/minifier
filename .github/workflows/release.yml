@@ -180,7 +180,6 @@ jobs:
           creds: ${{ secrets.AZURE_DEV }}
       - name: Deploy Infrastructure to test
         id: deployinfrastructuretest
-        environment: Test
         uses: Azure/cli@1.0.4
         with:
           inlineScript: |
