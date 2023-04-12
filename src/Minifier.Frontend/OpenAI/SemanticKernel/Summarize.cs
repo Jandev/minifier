@@ -38,7 +38,7 @@ namespace Minifier.Frontend.OpenAI.SemanticKernel
 				throw new Exception(result.LastErrorDescription);
 			}
 
-			return result.Result;
+			return result.Result.Trim();
 		}
 	}
 }
