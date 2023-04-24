@@ -168,6 +168,7 @@ jobs:
     needs: [publish-bicep, basic-infrastructure, deploy-functions-package]
     runs-on: ubuntu-latest
     environment: Test
+    if: github.ref == 'refs/heads/develop'
     steps:
       - name: Download Artifact
         uses: actions/download-artifact@v2
@@ -193,6 +194,7 @@ jobs:
     needs: [publish-bicep, basic-infrastructure, deploy-functions-package]
     runs-on: ubuntu-latest
     environment: Production
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Download Artifact
         uses: actions/download-artifact@v2
