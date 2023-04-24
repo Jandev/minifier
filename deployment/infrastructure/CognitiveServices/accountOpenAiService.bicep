@@ -30,6 +30,7 @@ resource openAiService 'Microsoft.CognitiveServices/accounts@2022-12-01' = {
   sku: {
     name: skuName
   }
+  properties: { }
 }
 
 resource llmDeployment 'Microsoft.CognitiveServices/accounts/deployments@2022-12-01' = {
