@@ -78,7 +78,7 @@ The `principalId` is the Object Id of your Managed Identity OR from your own Azu
 
 The contents of the `Minifier.Backend` project should look similar to the following:
 
-```json
+```jsonc
 {
   "IsEncrypted": false,
   "Values": {
@@ -98,7 +98,7 @@ The contents of the `Minifier.Backend` project should look similar to the follow
 
 The contents of the `Minifier.Frontend` project should look similar to the following:
 
-```json
+```jsonc
 {
   "IsEncrypted": false,
   "Values": {

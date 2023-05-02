@@ -27,7 +27,7 @@ namespace Minifier.Frontend
 			if (Cache.MinifierEntries.ContainsKey(slug))
 			{
 				foundMinifiedUrl = Cache.MinifierEntries[slug];
-				this.logger.LogInformation("Retrieved `{slug}` from cache.", slug);
+				this.logger.LogDebug("Retrieved `{slug}` from cache.", slug);
 			}
 			else
 			{
