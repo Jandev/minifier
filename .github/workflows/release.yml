@@ -144,12 +144,12 @@ jobs:
         uses: Azure/cli@1.0.4
         with:
           inlineScript: |
-            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_WEU }} -n '${{ env.GITHUB_SHA }}/backend.zip'
-            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_WEU }} -n '${{ env.GITHUB_SHA }}/frontend.zip'
-            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_WUS }} -n '${{ env.GITHUB_SHA }}/backend.zip'
-            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_WUS }} -n '${{ env.GITHUB_SHA }}/frontend.zip'
-            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_AUS }} -n '${{ env.GITHUB_SHA }}/backend.zip'
-            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_AUS }} -n '${{ env.GITHUB_SHA }}/frontend.zip'
+            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_WEU }} -n '${{ env.GITHUB_SHA }}/backend.zip' --overwrite
+            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_WEU }} -n '${{ env.GITHUB_SHA }}/frontend.zip' --overwrite
+            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_WUS }} -n '${{ env.GITHUB_SHA }}/backend.zip' --overwrite
+            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_WUS }} -n '${{ env.GITHUB_SHA }}/frontend.zip' --overwrite
+            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_AUS }} -n '${{ env.GITHUB_SHA }}/backend.zip' --overwrite
+            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_PROD_AUS }} -n '${{ env.GITHUB_SHA }}/frontend.zip' --overwrite
 
       - name: Deploy packages to test
         if: github.ref == 'refs/heads/develop'
@@ -157,12 +157,12 @@ jobs:
         uses: Azure/cli@1.0.4
         with:
           inlineScript: |
-            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_WEU }} -n '${{ env.GITHUB_SHA }}/backend.zip'
-            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_WEU }} -n '${{ env.GITHUB_SHA }}/frontend.zip'
-            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_WUS }} -n '${{ env.GITHUB_SHA }}/backend.zip'
-            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_WUS }} -n '${{ env.GITHUB_SHA }}/frontend.zip'
-            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_AUS }} -n '${{ env.GITHUB_SHA }}/backend.zip'
-            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_AUS }} -n '${{ env.GITHUB_SHA }}/frontend.zip'
+            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_WEU }} -n '${{ env.GITHUB_SHA }}/backend.zip' --overwrite
+            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_WEU }} -n '${{ env.GITHUB_SHA }}/frontend.zip' --overwrite
+            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_WUS }} -n '${{ env.GITHUB_SHA }}/backend.zip' --overwrite
+            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_WUS }} -n '${{ env.GITHUB_SHA }}/frontend.zip' --overwrite
+            az storage blob upload -f 'backend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_AUS }} -n '${{ env.GITHUB_SHA }}/backend.zip' --overwrite
+            az storage blob upload -f 'frontend.zip' -c '${{ env.DEPLOYMENT_STORAGEACCOUNT_CONTAINER_NAME }}' --account-name ${{ env.DEPLOYMENT_STORAGEACCOUNT_NAME_TEST_AUS }} -n '${{ env.GITHUB_SHA }}/frontend.zip' --overwrite
 
   application-infrastructure-test:
     needs: [publish-bicep, basic-infrastructure, deploy-functions-package]
