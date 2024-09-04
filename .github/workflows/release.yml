@@ -98,7 +98,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: bicep-templates
           path: ./infrastructure
@@ -130,11 +130,11 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_DEV }}
       - name: Download backend artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: backend-functions-artifact
       - name: Download Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: frontend-functions-artifact
 
@@ -171,7 +171,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     steps:
       - name: Download Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: bicep-templates
           path: ./infrastructure
@@ -197,7 +197,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Download Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: bicep-templates
           path: ./infrastructure
